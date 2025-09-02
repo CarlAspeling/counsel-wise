@@ -36,6 +36,23 @@ Homestead.yaml
 # Testing
 .phpunit.result.cache
 
+# Database files
+*.sqlite
+*.sqlite-journal
+
+# Storage and cache directories
+/storage/framework/cache/data/
+/storage/framework/sessions/
+/storage/framework/views/
+/storage/logs/
+
+# Build artifacts
+/public/build/
+
+# Additional environment files
+.env.local
+.env.*.local
+
 # IDE and Editor files
 /.fleet
 /.idea
