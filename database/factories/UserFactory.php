@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\AccountType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -24,11 +25,16 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'name' => fake()->firstName(),
+            'surname' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'hpcsa_number' => fake()->numerify('#######'),
+            'hpcsa_verified_at' => fake()->optional(0.5)->dateTimeBetween('-1 year', 'now'),
+            'profile_picture' => fake()->optional(0.3)->imageUrl(200, 200, 'people'),
+            'account_type' => fake()->randomElement(AccountType::cases())->value,
         ];
     }
 
@@ -39,6 +45,64 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Create a free account-based counsellor with HPCSA verification.
+     */
+    public function freeCounsellor(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'account_type' => AccountType::CounsellorFree->value,
+            'hpcsa_number' => fake()->numerify('#######'),
+            'hpcsa_verified_at' => fake()->dateTimeBetween('-6 months', 'now'),
+        ]);
+    }
+
+    /**
+     * Create a paid account-based counsellor with HPCSA verification.
+     */
+    public function paidCounsellor(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'account_type' => AccountType::CounsellorPaid->value,
+            'hpcsa_number' => fake()->numerify('#######'),
+            'hpcsa_verified_at' => fake()->dateTimeBetween('-6 months', 'now'),
+        ]);
+    }
+
+    /**
+     * Create a researcher account.
+     */
+    public function researcher(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'account_type' => AccountType::Researcher->value,
+            'hpcsa_number' => null,
+            'hpcsa_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Create a paid account-based student counsellor account.
+     */
+    public function studentRc(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'account_type' => AccountType::StudentRc->value,
+            'hpcsa_number' => fake()->numerify('#######'),
+            'hpcsa_verified_at' => fake()->dateTimeBetween('-6 months', 'now'),
+        ]);
+    }
+
+    /**
+     * Create a super admin account.
+     */
+    public function superAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'account_type' => AccountType::SuperAdmin->value,
         ]);
     }
 }
