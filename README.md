@@ -8,7 +8,7 @@ Counselwise connects mental health professionals with evidence-based therapeutic
 
 ## Tech Stack
 
-- **Backend**: Laravel 12, PHP 8.4
+- **Backend**: Laravel 12, PHP 8.3
 - **Frontend**: Vue.js 3 with Inertia.js
 - **Styling**: Tailwind CSS 4
 - **Database**: PostgreSQL
@@ -18,7 +18,7 @@ Counselwise connects mental health professionals with evidence-based therapeutic
 
 ## Requirements
 
-- PHP 8.4+
+- PHP 8.2+
 - Composer
 - Node.js 22+
 - PostgreSQL
@@ -127,9 +127,8 @@ The platform supports different user roles:
 
 ## Security
 
-The application includes comprehensive security measures:
+The application includes basic security measures:
 
-- Automated vulnerability scanning via GitHub Actions
-- Dependency security checks
-- Code analysis with CodeQL
-- Regular security audits
+- Code formatting and linting via GitHub Actions
+- Laravel's built-in security features
+- Environment-based configuration
