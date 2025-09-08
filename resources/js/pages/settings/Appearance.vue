@@ -7,12 +7,12 @@ import { type BreadcrumbItem } from '@/types';
 
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { appearance } from '@/routes';
+// import { appearance } from '@/routes';
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
         title: 'Appearance settings',
-        href: appearance().url,
+        href: '/settings/appearance', // Temporary hardcoded URL
     },
 ];
 </script>

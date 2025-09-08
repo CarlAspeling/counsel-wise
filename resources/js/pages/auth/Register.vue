@@ -60,7 +60,7 @@ import { LoaderCircle } from 'lucide-vue-next';
                 </Button>
             </div>
 
-            <div class="text-center text-sm text-muted-foreground">
+            <div class="text-muted-foreground text-center text-sm">
                 Already have an account?
                 <TextLink :href="login()" class="underline underline-offset-4" :tabindex="6">Log in</TextLink>
             </div>
