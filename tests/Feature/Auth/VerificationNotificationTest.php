@@ -13,9 +13,12 @@ test('sends verification notification', function () {
         'email_verified_at' => null,
     ]);
 
-    $this->actingAs($user)
-        ->post(route('verification.send'))
-        ->assertRedirect(route('home'));
+    $response = $this->actingAs($user)
+        ->from(route('verification.notice'))
+        ->post(route('verification.send'));
+
+    $response->assertRedirect(route('verification.notice'))
+        ->assertSessionHas('status', 'verification-link-sent');
 
     Notification::assertSentTo($user, VerifyEmail::class);
 });
