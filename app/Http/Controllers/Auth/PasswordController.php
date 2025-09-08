@@ -7,9 +7,20 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\View\View;
 
 class PasswordController extends Controller
 {
+    /**
+     * Show the password change form.
+     */
+    public function edit(): View
+    {
+        return view('profile.edit', [
+            'user' => request()->user(),
+        ]);
+    }
+
     /**
      * Update the user's password.
      */
