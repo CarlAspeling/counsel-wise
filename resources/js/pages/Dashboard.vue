@@ -1,37 +1,44 @@
-<script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
-import PlaceholderPattern from '../components/PlaceholderPattern.vue';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard().url,
-    },
-];
-</script>
-
 <template>
-    <Head title="Dashboard" />
+    <AppLayout>
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900">
+                        <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
 
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-                <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                    <PlaceholderPattern />
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-blue-50 p-6 rounded-lg">
+                                <h3 class="text-lg font-semibold text-blue-800 mb-2">Total Clients</h3>
+                                <p class="text-3xl font-bold text-blue-600">0</p>
+                            </div>
+
+                            <div class="bg-green-50 p-6 rounded-lg">
+                                <h3 class="text-lg font-semibold text-green-800 mb-2">Active Sessions</h3>
+                                <p class="text-3xl font-bold text-green-600">0</p>
+                            </div>
+
+                            <div class="bg-purple-50 p-6 rounded-lg">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-2">Recommendations</h3>
+                                <p class="text-3xl font-bold text-purple-600">0</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h2 class="text-xl font-semibold mb-4">Welcome to CounselWise</h2>
+                            <p class="text-gray-600 mb-4">
+                                Your platform for AI-powered therapeutic recommendations tailored to your clients' needs.
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                HPCSA Registration: {{ $page.props.auth.user.hpcsa_number || 'Not provided' }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                    <PlaceholderPattern />
-                </div>
-                <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                    <PlaceholderPattern />
-                </div>
-            </div>
-            <div class="border-sidebar-border/70 dark:border-sidebar-border relative min-h-[100vh] flex-1 rounded-xl border md:min-h-min">
-                <PlaceholderPattern />
             </div>
         </div>
     </AppLayout>
 </template>
+
+<script setup>
+import AppLayout from '@/Layouts/AppLayout.vue'
+</script>
