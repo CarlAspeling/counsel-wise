@@ -1,69 +1,153 @@
-<script setup lang="ts">
-import RegisteredUserController from '@/actions/App/Http/Controllers/Auth/RegisteredUserController';
-import InputError from '@/components/InputError.vue';
-import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import AuthBase from '@/layouts/AuthLayout.vue';
-import { login } from '@/routes';
-import { Form, Head } from '@inertiajs/vue3';
-import { LoaderCircle } from 'lucide-vue-next';
-</script>
-
 <template>
-    <AuthBase title="Create an account" description="Enter your details below to create your account">
-        <Head title="Register" />
-
-        <Form
-            v-bind="RegisteredUserController.store.form()"
-            :reset-on-success="['password', 'password_confirmation']"
-            v-slot="{ errors, processing }"
-            class="flex flex-col gap-6"
-        >
-            <div class="grid gap-6">
-                <div class="grid gap-2">
-                    <Label for="name">Name</Label>
-                    <Input id="name" type="text" required autofocus :tabindex="1" autocomplete="name" name="name" placeholder="Full name" />
-                    <InputError :message="errors.name" />
-                </div>
-
-                <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
-                    <Input id="email" type="email" required :tabindex="2" autocomplete="email" name="email" placeholder="email@example.com" />
-                    <InputError :message="errors.email" />
-                </div>
-
-                <div class="grid gap-2">
-                    <Label for="password">Password</Label>
-                    <Input id="password" type="password" required :tabindex="3" autocomplete="new-password" name="password" placeholder="Password" />
-                    <InputError :message="errors.password" />
-                </div>
-
-                <div class="grid gap-2">
-                    <Label for="password_confirmation">Confirm password</Label>
-                    <Input
-                        id="password_confirmation"
-                        type="password"
-                        required
-                        :tabindex="4"
-                        autocomplete="new-password"
-                        name="password_confirmation"
-                        placeholder="Confirm password"
-                    />
-                    <InputError :message="errors.password_confirmation" />
-                </div>
-
-                <Button type="submit" class="mt-2 w-full" tabindex="5" :disabled="processing">
-                    <LoaderCircle v-if="processing" class="h-4 w-4 animate-spin" />
-                    Create account
-                </Button>
+    <div class="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Register for CounselWise
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    For HPCSA registered counsellors only
+                </p>
             </div>
 
-            <div class="text-muted-foreground text-center text-sm">
-                Already have an account?
-                <TextLink :href="login()" class="underline underline-offset-4" :tabindex="6">Log in</TextLink>
-            </div>
-        </Form>
-    </AuthBase>
+            <form @submit.prevent="submit" class="mt-8 space-y-6">
+                <div class="bg-white shadow-md rounded px-8 pt-6 pb-8">
+                    <div class="mb-4">
+                        <label for="name" class="block text-gray-700 text-sm font-bold mb-2">
+                            Full Name
+                        </label>
+                        <input
+                            id="name"
+                            v-model="form.name"
+                            type="text"
+                            required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            :class="{ 'border-red-500': form.errors.name }"
+                        />
+                        <div v-if="form.errors.name" class="text-red-500 text-xs italic mt-1">
+                            {{ form.errors.name }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="surname" class="block text-gray-700 text-sm font-bold mb-2">
+                            Surname
+                        </label>
+                        <input
+                            id="surname"
+                            v-model="form.surname"
+                            type="text"
+                            required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            :class="{ 'border-red-500': form.errors.surname }"
+                        />
+                        <div v-if="form.errors.surname" class="text-red-500 text-xs italic mt-1">
+                            {{ form.errors.surname }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="hpcsa_number" class="block text-gray-700 text-sm font-bold mb-2">
+                            HPCSA Registration Number
+                        </label>
+                        <input
+                            id="hpcsa_number"
+                            v-model="form.hpcsa_number"
+                            type="text"
+                            required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            :class="{ 'border-red-500': form.errors.hpcsa_number }"
+                            placeholder="e.g. PS0123456"
+                        />
+                        <div v-if="form.errors.hpcsa_number" class="text-red-500 text-xs italic mt-1">
+                            {{ form.errors.hpcsa_number }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="email" class="block text-gray-700 text-sm font-bold mb-2">
+                            Email Address
+                        </label>
+                        <input
+                            id="email"
+                            v-model="form.email"
+                            type="email"
+                            required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            :class="{ 'border-red-500': form.errors.email }"
+                        />
+                        <div v-if="form.errors.email" class="text-red-500 text-xs italic mt-1">
+                            {{ form.errors.email }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="block text-gray-700 text-sm font-bold mb-2">
+                            Password
+                        </label>
+                        <input
+                            id="password"
+                            v-model="form.password"
+                            type="password"
+                            required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            :class="{ 'border-red-500': form.errors.password }"
+                        />
+                        <div v-if="form.errors.password" class="text-red-500 text-xs italic mt-1">
+                            {{ form.errors.password }}
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="password_confirmation" class="block text-gray-700 text-sm font-bold mb-2">
+                            Confirm Password
+                        </label>
+                        <input
+                            id="password_confirmation"
+                            v-model="form.password_confirmation"
+                            type="password"
+                            required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <button
+                            type="submit"
+                            :disabled="form.processing"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 w-full"
+                        >
+                            {{ form.processing ? 'Creating Account...' : 'Create Account' }}
+                        </button>
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <Link
+                            href="/login"
+                            class="text-blue-500 hover:text-blue-800 text-sm"
+                        >
+                            Already have an account? Sign in here
+                        </Link>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </template>
+
+<script setup>
+import { useForm, Link } from '@inertiajs/vue3'
+
+const form = useForm({
+    name: '',
+    surname: '',
+    hpcsa_number: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+})
+
+const submit = () => {
+    form.post('/register')
+}
+</script>

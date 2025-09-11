@@ -1,18 +1,35 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import vue from '@vitejs/plugin-vue';
+﻿const { defineConfig } = require('vite');
+const laravel = require('laravel-vite-plugin');
+const vue = require('@vitejs/plugin-vue');
+const path = require('path');
 
-export default defineConfig({
+module.exports = defineConfig({
     plugins: [
-        vue(),
-        laravel({
+        laravel.default({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
+        }),
+        vue.default({
+            template: {
+                transformAssetUrls: {
+                    base: null,
+                    includeAbsolute: false,
+                },
+            },
         }),
     ],
     resolve: {
         alias: {
-            '@': '/resources/js',
+            '@': path.resolve(__dirname, 'resources/js'),
+        },
+    },
+    server: {
+        host: '127.0.0.1',
+        port: 5173,
+        strictPort: true,
+        cors: {
+            origin: ['http://counsel-wise.test', 'https://counsel-wise.test'],
+            credentials: true,
         },
     },
 });
