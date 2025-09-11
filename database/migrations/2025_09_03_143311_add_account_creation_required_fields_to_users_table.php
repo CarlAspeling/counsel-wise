@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('hpcsa_number')->nullable();
             $table->timestamp('hpcsa_verified_at')->nullable();
             $table->string('profile_picture')->nullable();
-            $table->enum('account_type', array_column(AccountType::cases(), 'value'));
+            $table->enum('account_type', array_column(AccountType::cases(), 'value'))->default(AccountType::CounsellorFree->value);
             $table->softDeletes();
         });
     }
