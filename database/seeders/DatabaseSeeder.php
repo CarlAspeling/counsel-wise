@@ -16,10 +16,5 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AccountTypeSeeder::class,
         ]);
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
     }
 }
