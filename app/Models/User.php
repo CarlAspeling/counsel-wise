@@ -2,8 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\AccountStatus;
 use App\Enums\AccountType;
+use App\Enums\Gender;
+use App\Enums\Language;
+use App\Enums\SouthAfricanProvince;
+use App\Enums\ThemePreference;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -27,6 +32,13 @@ class User extends Authenticatable implements MustVerifyEmail
         'hpcsa_number',
         'account_type',
         'profile_picture',
+        'account_status',
+        'theme_preference',
+        'phone_number',
+        'gender',
+        'language',
+        'region',
+        'notification_preferences',
     ];
 
     /**
@@ -49,8 +61,17 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'hpcsa_verified_at' => 'datetime',
+            'last_login_at' => 'datetime',
+            'data_privacy_consent' => 'datetime',
+            'terms_accepted_at' => 'datetime',
             'password' => 'hashed',
             'account_type' => AccountType::class,
+            'account_status' => AccountStatus::class,
+            'theme_preference' => ThemePreference::class,
+            'gender' => Gender::class,
+            'language' => Language::class,
+            'region' => SouthAfricanProvince::class,
+            'notification_preferences' => 'array',
         ];
     }
 }
