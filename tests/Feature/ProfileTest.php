@@ -14,6 +14,7 @@ test('profile page is displayed', function () {
 
 test('profile information can be updated', function () {
     $user = User::factory()->create();
+    $originalAccountType = $user->account_type;
 
     $response = $this
         ->actingAs($user)
@@ -22,7 +23,10 @@ test('profile information can be updated', function () {
             'surname' => 'Updated Surname',
             'email' => 'test@example.com',
             'hpcsa_number' => $user->hpcsa_number,
-            'account_type' => $user->account_type->value,
+            'phone_number' => '+27 82 555 1234',
+            'gender' => 'female',
+            'language' => 'afrikaans',
+            'region' => 'gauteng',
         ]);
 
     $response
@@ -34,6 +38,11 @@ test('profile information can be updated', function () {
     $this->assertSame('Test User', $user->name);
     $this->assertSame('Updated Surname', $user->surname);
     $this->assertSame('test@example.com', $user->email);
+    $this->assertSame('+27 82 555 1234', $user->phone_number);
+    $this->assertSame('female', $user->gender->value);
+    $this->assertSame('afrikaans', $user->language->value);
+    $this->assertSame('gauteng', $user->region->value);
+    $this->assertSame($originalAccountType, $user->account_type);
     $this->assertNull($user->email_verified_at);
 });
 
@@ -47,7 +56,10 @@ test('email verification status is unchanged when the email address is unchanged
             'surname' => $user->surname,
             'email' => $user->email,
             'hpcsa_number' => $user->hpcsa_number,
-            'account_type' => $user->account_type->value,
+            'phone_number' => '+27 81 123 4567',
+            'gender' => 'male',
+            'language' => 'english',
+            'region' => 'western_cape',
         ]);
 
     $response
