@@ -1,15 +1,15 @@
-﻿const { defineConfig } = require('vite');
-const laravel = require('laravel-vite-plugin');
-const vue = require('@vitejs/plugin-vue');
-const path = require('path');
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import vue from '@vitejs/plugin-vue';
+import { resolve } from 'path';
 
-module.exports = defineConfig({
+export default defineConfig({
     plugins: [
-        laravel.default({
+        laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
         }),
-        vue.default({
+        vue({
             template: {
                 transformAssetUrls: {
                     base: null,
@@ -20,7 +20,7 @@ module.exports = defineConfig({
     ],
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, 'resources/js'),
+            '@': resolve(process.cwd(), 'resources/js'),
         },
     },
     server: {

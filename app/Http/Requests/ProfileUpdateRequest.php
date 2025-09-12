@@ -3,6 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Enums\AccountType;
+use App\Enums\Gender;
+use App\Enums\Language;
+use App\Enums\SouthAfricanProvince;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -28,7 +31,10 @@ class ProfileUpdateRequest extends FormRequest
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
             'hpcsa_number' => ['required', 'string', 'max:255'],
-            'account_type' => ['required', Rule::enum(AccountType::class)],
+            'phone_number' => ['nullable', 'string', 'max:255'],
+            'gender' => ['nullable', Rule::enum(Gender::class)],
+            'language' => ['nullable', Rule::enum(Language::class)],
+            'region' => ['nullable', Rule::enum(SouthAfricanProvince::class)],
         ];
     }
 }

@@ -12,14 +12,15 @@
                     <div class="flex items-center space-x-4" v-if="$page.props.auth.user">
                         <span class="text-gray-700">{{ $page.props.auth.user.name }}</span>
                         <Link
-                            href="/profile"
+                            :href="route('profile.edit')"
                             class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md"
                         >
                             Profile
                         </Link>
                         <Link
-                            href="/logout"
+                            :href="route('logout')"
                             method="post"
+                            as="button"
                             class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"
                         >
                             Logout
@@ -28,13 +29,13 @@
 
                     <div class="flex items-center space-x-4" v-else>
                         <Link
-                            href="/login"
+                            :href="route('login')"
                             class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md"
                         >
                             Login
                         </Link>
                         <Link
-                            href="/register"
+                            :href="route('register')"
                             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
                         >
                             Register

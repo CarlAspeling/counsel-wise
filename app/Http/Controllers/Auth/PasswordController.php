@@ -7,17 +7,24 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class PasswordController extends Controller
 {
     /**
      * Show the password change form.
      */
-    public function edit(): View
+    public function edit(): Response
     {
-        return view('profile.edit', [
-            'user' => request()->user(),
+        return Inertia::render('Profile/Edit', [
+            'auth' => [
+                'user' => request()->user(),
+            ],
+            'routes' => [
+                'profile.update' => route('profile.update'),
+                'password.update' => route('password.update'),
+            ],
         ]);
     }
 
