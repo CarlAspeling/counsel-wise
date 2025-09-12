@@ -67,7 +67,7 @@
                         </button>
 
                         <Link
-                            href="/forgot-password"
+                            :href="route('password.request')"
                             class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
                         >
                             Forgot Password?
@@ -76,7 +76,7 @@
 
                     <div class="mt-6 text-center">
                         <Link
-                            href="/register"
+                            :href="route('register')"
                             class="text-blue-500 hover:text-blue-800 text-sm"
                         >
                             Don't have an account? Register here
@@ -98,6 +98,6 @@ const form = useForm({
 })
 
 const submit = () => {
-    form.post('/login')
+    form.post(route('login.store'))
 }
 </script>

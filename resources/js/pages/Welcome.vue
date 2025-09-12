@@ -10,7 +10,7 @@
                     <div class="items-center justify-end md:flex md:flex-1 lg:w-0" v-if="canLogin">
                         <Link
                             v-if="$page.props.auth.user"
-                            href="/dashboard"
+                            :href="route('dashboard')"
                             class="ml-8 whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900"
                         >
                             Dashboard
@@ -18,14 +18,14 @@
 
                         <template v-else>
                             <Link
-                                href="/login"
+                                :href="route('login')"
                                 class="whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900"
                             >
                                 Sign in
                             </Link>
                             <Link
                                 v-if="canRegister"
-                                href="/register"
+                                :href="route('register')"
                                 class="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
                             >
                                 Sign up
@@ -57,14 +57,14 @@
                                 <div class="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex">
                                     <Link
                                         v-if="canRegister && !$page.props.auth.user"
-                                        href="/register"
+                                        :href="route('register')"
                                         class="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-blue-700 bg-white hover:bg-blue-50 sm:px-8"
                                     >
                                         Get Started
                                     </Link>
                                     <Link
                                         v-if="$page.props.auth.user"
-                                        href="/dashboard"
+                                        :href="route('dashboard')"
                                         class="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-blue-700 bg-white hover:bg-blue-50 sm:px-8"
                                     >
                                         Go to Dashboard

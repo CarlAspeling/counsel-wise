@@ -63,6 +63,91 @@
                                         {{ profileForm.errors.hpcsa_number }}
                                     </div>
                                 </div>
+
+                                <div>
+                                    <label for="phone_number" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                                    <input
+                                        id="phone_number"
+                                        v-model="profileForm.phone_number"
+                                        type="tel"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        :class="{ 'border-red-500': profileForm.errors.phone_number }"
+                                        placeholder="+27 XX XXX XXXX"
+                                    />
+                                    <div v-if="profileForm.errors.phone_number" class="text-red-500 text-xs mt-1">
+                                        {{ profileForm.errors.phone_number }}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
+                                    <select
+                                        id="gender"
+                                        v-model="profileForm.gender"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        :class="{ 'border-red-500': profileForm.errors.gender }"
+                                    >
+                                        <option value="">Select gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="prefer_not_to_say">Prefer not to say</option>
+                                    </select>
+                                    <div v-if="profileForm.errors.gender" class="text-red-500 text-xs mt-1">
+                                        {{ profileForm.errors.gender }}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="language" class="block text-sm font-medium text-gray-700">Language</label>
+                                    <select
+                                        id="language"
+                                        v-model="profileForm.language"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        :class="{ 'border-red-500': profileForm.errors.language }"
+                                    >
+                                        <option value="">Select language</option>
+                                        <option value="english">English</option>
+                                        <option value="afrikaans">Afrikaans</option>
+                                        <option value="zulu">Zulu</option>
+                                        <option value="xhosa">Xhosa</option>
+                                        <option value="sotho">Sotho</option>
+                                        <option value="tswana">Tswana</option>
+                                        <option value="venda">Venda</option>
+                                        <option value="tsonga">Tsonga</option>
+                                        <option value="ndebele">Ndebele</option>
+                                        <option value="swati">Swati</option>
+                                        <option value="pedi">Pedi</option>
+                                    </select>
+                                    <div v-if="profileForm.errors.language" class="text-red-500 text-xs mt-1">
+                                        {{ profileForm.errors.language }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+                                <div>
+                                    <label for="region" class="block text-sm font-medium text-gray-700">Region</label>
+                                    <select
+                                        id="region"
+                                        v-model="profileForm.region"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        :class="{ 'border-red-500': profileForm.errors.region }"
+                                    >
+                                        <option value="">Select region</option>
+                                        <option value="western_cape">Western Cape</option>
+                                        <option value="gauteng">Gauteng</option>
+                                        <option value="kwazulu_natal">KwaZulu-Natal</option>
+                                        <option value="eastern_cape">Eastern Cape</option>
+                                        <option value="limpopo">Limpopo</option>
+                                        <option value="mpumalanga">Mpumalanga</option>
+                                        <option value="north_west">North West</option>
+                                        <option value="northern_cape">Northern Cape</option>
+                                        <option value="free_state">Free State</option>
+                                    </select>
+                                    <div v-if="profileForm.errors.region" class="text-red-500 text-xs mt-1">
+                                        {{ profileForm.errors.region }}
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="flex items-center gap-4">
@@ -160,6 +245,10 @@ const profileForm = useForm({
     surname: props.auth.user.surname,
     email: props.auth.user.email,
     hpcsa_number: props.auth.user.hpcsa_number,
+    phone_number: props.auth.user.phone_number,
+    gender: props.auth.user.gender,
+    language: props.auth.user.language,
+    region: props.auth.user.region,
 })
 
 const passwordForm = useForm({
@@ -169,13 +258,13 @@ const passwordForm = useForm({
 })
 
 const updateProfile = () => {
-    profileForm.patch('/profile', {
+    profileForm.patch(route('profile.update'), {
         preserveScroll: true,
     })
 }
 
 const updatePassword = () => {
-    passwordForm.put('/password', {
+    passwordForm.put(route('password.update'), {
         preserveScroll: true,
         onSuccess: () => passwordForm.reset(),
     })
