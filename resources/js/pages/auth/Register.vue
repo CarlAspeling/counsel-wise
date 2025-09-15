@@ -1,22 +1,56 @@
 <script setup>
 import { useForm, Link } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import PasswordStrengthIndicator from '@/Components/PasswordStrengthIndicator.vue';
+import { validatePassword } from '@/utils/passwordValidation.js';
+
+const props = defineProps({
+    old: {
+        type: Object,
+        default: () => ({})
+    }
+});
 
 const form = useForm({
-    name: '',
-    surname: '',
-    hpcsa_number: '',
-    email: '',
-    account_type: '',
+    name: props.old.name || '',
+    surname: props.old.surname || '',
+    hpcsa_number: props.old.hpcsa_number || '',
+    email: props.old.email || '',
+    account_type: props.old.account_type || '',
     password: '',
     password_confirmation: '',
 });
 
+// Password validation state
+const passwordValidation = computed(() => validatePassword(form.password));
+const isPasswordValid = computed(() => passwordValidation.value.isValid);
+
+// Password confirmation validation
+const passwordsMatch = computed(() => {
+    if (!form.password_confirmation) return true; // Don't show error until they start typing
+    return form.password === form.password_confirmation;
+});
+
+// Form submission validation
+const canSubmit = computed(() => {
+    return isPasswordValid.value && passwordsMatch.value && !form.processing;
+});
+
 const submit = () => {
+    // Client-side validation before submission
+    if (!isPasswordValid.value) {
+        return;
+    }
+    
+    if (!passwordsMatch.value) {
+        return;
+    }
+    
     form.post(route('register.store'), {
         onFinish: () => {
             // Reset password fields on completion
@@ -129,6 +163,14 @@ const submit = () => {
                     autocomplete="new-password"
                 />
 
+                <!-- Password Strength Indicator -->
+                <PasswordStrengthIndicator 
+                    v-if="form.password"
+                    :password="form.password"
+                    :show-requirements="true"
+                    :show-errors="false"
+                />
+
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
@@ -144,13 +186,33 @@ const submit = () => {
                     autocomplete="new-password"
                 />
 
+                <!-- Password Match Validation -->
+                <div v-if="form.password_confirmation && !passwordsMatch" class="mt-2 text-xs text-red-600 dark:text-red-400">
+                    Passwords do not match
+                </div>
+                <div v-else-if="form.password_confirmation && passwordsMatch" class="mt-2 text-xs text-green-600 dark:text-green-400">
+                    Passwords match ✓
+                </div>
+
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
             </div>
 
             <div>
-                <PrimaryButton class="w-full justify-center" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton 
+                    class="w-full justify-center" 
+                    :class="{ 'opacity-25': form.processing || !canSubmit }" 
+                    :disabled="form.processing || !canSubmit"
+                >
                     {{ form.processing ? 'Creating Account...' : 'Create Account' }}
                 </PrimaryButton>
+                
+                <!-- Submit button help text -->
+                <div v-if="form.password && !isPasswordValid" class="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                    Please ensure your password meets all requirements above
+                </div>
+                <div v-else-if="form.password_confirmation && !passwordsMatch" class="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                    Please ensure both password fields match
+                </div>
             </div>
 
             <div class="text-center">

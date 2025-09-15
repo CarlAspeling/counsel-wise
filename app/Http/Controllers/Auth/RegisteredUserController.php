@@ -27,6 +27,14 @@ class RegisteredUserController extends Controller
                 'register' => route('register'),
                 'login' => route('login'),
             ],
+            'old' => [
+                'name' => old('name'),
+                'surname' => old('surname'),
+                'email' => old('email'),
+                'hpcsa_number' => old('hpcsa_number'),
+                'account_type' => old('account_type'),
+                // Intentionally exclude password fields for security
+            ],
         ]);
     }
 
