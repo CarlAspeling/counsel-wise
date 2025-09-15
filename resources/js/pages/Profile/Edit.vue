@@ -196,6 +196,15 @@
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                                     :class="{ 'border-red-500': passwordForm.errors.password }"
                                 />
+                                
+                                <!-- Password Strength Indicator -->
+                                <PasswordStrengthIndicator 
+                                    v-if="passwordForm.password"
+                                    :password="passwordForm.password"
+                                    :show-requirements="true"
+                                    :show-errors="false"
+                                />
+                                
                                 <div v-if="passwordForm.errors.password" class="text-red-500 text-xs mt-1">
                                     {{ passwordForm.errors.password }}
                                 </div>
@@ -209,13 +218,22 @@
                                     type="password"
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                                 />
+                                
+                                <!-- Password Match Validation -->
+                                <div v-if="passwordForm.password_confirmation && !passwordsMatch" class="mt-2 text-xs text-red-600">
+                                    Passwords do not match
+                                </div>
+                                <div v-else-if="passwordForm.password_confirmation && passwordsMatch" class="mt-2 text-xs text-green-600">
+                                    Passwords match ✓
+                                </div>
                             </div>
 
                             <div class="flex items-center gap-4">
                                 <button
                                     type="submit"
-                                    :disabled="passwordForm.processing"
+                                    :disabled="passwordForm.processing || !canUpdatePassword"
                                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md disabled:opacity-50"
+                                    :class="{ 'opacity-50': !canUpdatePassword }"
                                 >
                                     {{ passwordForm.processing ? 'Updating...' : 'Update Password' }}
                                 </button>
@@ -223,6 +241,14 @@
                                 <div v-if="passwordForm.recentlySuccessful" class="text-green-600 text-sm">
                                     Password updated successfully!
                                 </div>
+                            </div>
+                            
+                            <!-- Submit button help text -->
+                            <div v-if="passwordForm.password && !isPasswordValid" class="text-xs text-gray-500 text-center">
+                                Please ensure your password meets all requirements above
+                            </div>
+                            <div v-else-if="passwordForm.password_confirmation && !passwordsMatch" class="text-xs text-gray-500 text-center">
+                                Please ensure both password fields match
                             </div>
                         </form>
                     </div>
@@ -234,7 +260,10 @@
 
 <script setup>
 import { useForm } from '@inertiajs/vue3'
+import { computed } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import PasswordStrengthIndicator from '@/Components/PasswordStrengthIndicator.vue'
+import { validatePassword } from '@/utils/passwordValidation.js'
 
 const props = defineProps({
     auth: Object,
@@ -257,6 +286,21 @@ const passwordForm = useForm({
     password_confirmation: '',
 })
 
+// Password validation state  
+const passwordValidation = computed(() => validatePassword(passwordForm.password));
+const isPasswordValid = computed(() => passwordValidation.value.isValid);
+
+// Password confirmation validation
+const passwordsMatch = computed(() => {
+    if (!passwordForm.password_confirmation) return true;
+    return passwordForm.password === passwordForm.password_confirmation;
+});
+
+// Form submission validation for password form
+const canUpdatePassword = computed(() => {
+    return isPasswordValid.value && passwordsMatch.value && !passwordForm.processing;
+});
+
 const updateProfile = () => {
     profileForm.patch(route('profile.update'), {
         preserveScroll: true,
@@ -264,6 +308,15 @@ const updateProfile = () => {
 }
 
 const updatePassword = () => {
+    // Client-side validation before submission
+    if (!isPasswordValid.value) {
+        return;
+    }
+    
+    if (!passwordsMatch.value) {
+        return;
+    }
+    
     passwordForm.put(route('password.update'), {
         preserveScroll: true,
         onSuccess: () => passwordForm.reset(),
