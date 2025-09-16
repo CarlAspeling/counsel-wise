@@ -16,13 +16,37 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'status'])
     ->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'status'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Admin-only routes
+Route::middleware(['auth', 'verified', 'status', 'role:super_admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Placeholder for future admin routes
+    Route::get('/users', function () {
+        return inertia('Admin/Users');
+    })->name('users');
+
+    Route::get('/dashboard', function () {
+        return inertia('Admin/Dashboard');
+    })->name('dashboard');
+});
+
+// Researcher-specific routes
+Route::middleware(['auth', 'verified', 'status', 'role:researcher,super_admin'])->prefix('research')->name('research.')->group(function () {
+    // Placeholder for future research routes
+    Route::get('/data', function () {
+        return inertia('Research/Data');
+    })->name('data');
+
+    Route::get('/analytics', function () {
+        return inertia('Research/Analytics');
+    })->name('analytics');
 });
 
 require __DIR__.'/auth.php';
