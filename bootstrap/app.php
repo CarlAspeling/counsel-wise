@@ -4,6 +4,7 @@ use App\Http\Middleware\CheckAccountStatus;
 use App\Http\Middleware\CheckAccountType;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\ThrottlePasswordChanges;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => CheckAccountType::class,
             'status' => CheckAccountStatus::class,
+            'throttle.password' => ThrottlePasswordChanges::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
