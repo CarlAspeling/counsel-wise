@@ -13,8 +13,8 @@ test('new users can register', function () {
         'email' => 'test@example.com',
         'hpcsa_number' => 'HP123456',
         'account_type' => 'counsellor_free',
-        'password' => 'Password123!',
-        'password_confirmation' => 'Password123!',
+        'password' => 'UniqueRegistrationPassword2024!',
+        'password_confirmation' => 'UniqueRegistrationPassword2024!',
     ]);
 
     $this->assertAuthenticated();
