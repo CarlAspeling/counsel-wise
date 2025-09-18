@@ -46,7 +46,7 @@ class UserFactory extends Factory
             'profile_picture' => fake()->optional(0.3)->imageUrl(200, 200, 'people'),
             'account_type' => fake()->randomElement(AccountType::cases())->value,
             'last_login_at' => fake()->optional(0.7)->dateTimeBetween($createdAt, 'now'),
-            'account_status' => fake()->randomElement(AccountStatus::cases())->value,
+            'account_status' => AccountStatus::Active->value, // Default to Active for testing - production uses database default (Pending)
             'theme_preference' => fake()->optional(0.6)->randomElement(ThemePreference::cases())?->value,
             'data_privacy_consent' => fake()->optional(0.8)->dateTimeBetween($createdAt, $createdAtCarbon->copy()->addMinutes(10)),
             'terms_accepted_at' => fake()->optional(0.9)->dateTimeBetween($createdAt, $createdAtCarbon->copy()->addMinutes(10)),
