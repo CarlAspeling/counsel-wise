@@ -61,7 +61,8 @@ class PasswordController extends Controller
             // Increment rate limit attempts for validation failures
             ThrottlePasswordChanges::incrementAttempts($request);
 
-            // Re-throw the exception to maintain existing behavior
+            // Re-throw the exception with the proper error bag
+            $e->errorBag = 'updatePassword';
             throw $e;
         } catch (\Exception $e) {
             // Log unexpected failures

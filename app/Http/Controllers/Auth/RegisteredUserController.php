@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\AccountStatus;
 use App\Enums\AccountType;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -60,6 +61,7 @@ class RegisteredUserController extends Controller
             'email' => $validated['email'],
             'hpcsa_number' => $validated['hpcsa_number'],
             'account_type' => $validated['account_type'],
+            'account_status' => AccountStatus::Active, // TODO: Set to Pending when email/HPCSA validation implemented
             'password' => Hash::make($validated['password']),
         ]);
 
