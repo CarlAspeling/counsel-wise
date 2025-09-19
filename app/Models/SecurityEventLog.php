@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\SecurityEventType;
 use App\Services\GeolocationService;
+use App\Services\SecurityAlertService;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -90,7 +91,7 @@ class SecurityEventLog extends Model
             }
         }
 
-        return self::create([
+        $event = self::create([
             'event_type' => $eventType,
             'severity' => $eventType->getSeverity(),
             'description' => $eventType->getDescription(),
@@ -106,6 +107,21 @@ class SecurityEventLog extends Model
             'session_id' => $sessionId ?? session()->getId(),
             'occurred_at' => now(),
         ]);
+
+        // Trigger security alerts if necessary
+        if ($event->shouldAlert()) {
+            try {
+                app(SecurityAlertService::class)->processSecurityEvent($event);
+            } catch (\Exception $e) {
+                // Don't let alerting failures prevent event logging
+                \Log::error('Security alert processing failed', [
+                    'event_id' => $event->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return $event;
     }
 
     /**

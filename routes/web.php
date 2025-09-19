@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\SecurityDashboardController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -35,6 +36,13 @@ Route::middleware(['auth', 'verified', 'status', 'role:super_admin'])->prefix('a
     Route::get('/dashboard', function () {
         return inertia('Admin/Dashboard');
     })->name('dashboard');
+
+    // Security Dashboard routes
+    Route::prefix('security')->name('security.')->group(function () {
+        Route::get('/', [SecurityDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/events', [SecurityDashboardController::class, 'events'])->name('events');
+        Route::get('/suspicious', [SecurityDashboardController::class, 'suspicious'])->name('suspicious');
+    });
 });
 
 // Researcher-specific routes

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\ThrottlePasswordChanges;
 use App\Models\PasswordChangeLog;
+use App\Models\SecurityEventLog;
+use App\Enums\SecurityEventType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -78,6 +80,7 @@ class PasswordController extends Controller
      */
     private function logPasswordAttempt(Request $request, bool $success, ?string $failureReason = null): void
     {
+        // Keep existing PasswordChangeLog for backward compatibility
         PasswordChangeLog::create([
             'user_id' => $request->user()->id,
             'ip_address' => $request->ip(),
@@ -86,6 +89,24 @@ class PasswordController extends Controller
             'success' => $success,
             'failure_reason' => $failureReason,
         ]);
+
+        // Also log to SecurityEventLog for comprehensive security monitoring
+        if ($success) {
+            SecurityEventLog::createEvent(
+                SecurityEventType::PASSWORD_CHANGED,
+                $request->user(),
+                metadata: ['change_method' => 'profile_form']
+            );
+        } else {
+            SecurityEventLog::createEvent(
+                SecurityEventType::PASSWORD_CHANGE_FAILED,
+                $request->user(),
+                metadata: [
+                    'failure_reason' => $failureReason,
+                    'change_method' => 'profile_form'
+                ]
+            );
+        }
     }
 
     /**
