@@ -112,4 +112,67 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Rate Limiting
+    |--------------------------------------------------------------------------
+    |
+    | These configuration options control the rate limiting for authentication
+    | endpoints. Each limit defines the maximum number of attempts allowed
+    | before rate limiting kicks in and the decay time in seconds.
+    |
+    */
+
+    'rate_limits' => [
+        'login' => [
+            'max_attempts' => env('AUTH_LOGIN_MAX_ATTEMPTS', 5),
+            'decay_seconds' => env('AUTH_LOGIN_DECAY_SECONDS', 900), // 15 minutes
+        ],
+        'registration' => [
+            'max_attempts' => env('AUTH_REGISTRATION_MAX_ATTEMPTS', 3),
+            'decay_seconds' => env('AUTH_REGISTRATION_DECAY_SECONDS', 900), // 15 minutes
+        ],
+        'password_reset' => [
+            'max_attempts' => env('AUTH_PASSWORD_RESET_MAX_ATTEMPTS', 3),
+            'decay_seconds' => env('AUTH_PASSWORD_RESET_DECAY_SECONDS', 300), // 5 minutes
+        ],
+        'email_verification' => [
+            'max_attempts' => env('AUTH_EMAIL_VERIFICATION_MAX_ATTEMPTS', 2),
+            'decay_seconds' => env('AUTH_EMAIL_VERIFICATION_DECAY_SECONDS', 300), // 5 minutes
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rate Limiting Monitoring & Administration
+    |--------------------------------------------------------------------------
+    |
+    | These configuration options control monitoring, analytics, and administrative
+    | features for rate limiting. This includes dashboard settings, admin bypass
+    | capabilities, and violation logging preferences.
+    |
+    */
+
+    'rate_limit_monitoring' => [
+        'enabled' => env('AUTH_RATE_LIMIT_MONITORING_ENABLED', true),
+        'dashboard_refresh_interval' => env('AUTH_RATE_LIMIT_DASHBOARD_REFRESH_SECONDS', 30),
+        'violation_retention_days' => env('AUTH_RATE_LIMIT_VIOLATION_RETENTION_DAYS', 30),
+        'analytics_enabled' => env('AUTH_RATE_LIMIT_ANALYTICS_ENABLED', true),
+        'admin_bypass' => [
+            'enabled' => env('AUTH_RATE_LIMIT_ADMIN_BYPASS_ENABLED', true),
+            'roles' => ['super-admin', 'admin'], // User roles that can bypass rate limits
+            'log_bypasses' => env('AUTH_RATE_LIMIT_LOG_ADMIN_BYPASSES', true),
+        ],
+        'alerts' => [
+            'enabled' => env('AUTH_RATE_LIMIT_ALERTS_ENABLED', true),
+            'threshold_percentage' => env('AUTH_RATE_LIMIT_ALERT_THRESHOLD', 80), // Alert when 80% of limit reached
+            'suspicious_patterns' => env('AUTH_RATE_LIMIT_SUSPICIOUS_PATTERN_DETECTION', true),
+        ],
+        'statistics' => [
+            'aggregation_intervals' => ['1h', '24h', '7d', '30d'],
+            'top_ips_limit' => env('AUTH_RATE_LIMIT_TOP_IPS_LIMIT', 10),
+            'export_formats' => ['csv', 'json'],
+        ],
+    ],
+
 ];

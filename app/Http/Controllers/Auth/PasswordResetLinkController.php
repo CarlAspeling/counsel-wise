@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\PasswordResetRequest;
+use App\Http\StatusCodes;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -28,20 +31,49 @@ class PasswordResetLinkController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(PasswordResetRequest $request): RedirectResponse|JsonResponse
     {
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-        ]);
+        try {
+            $validated = $request->validated();
+            $status = Password::sendResetLink($validated);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink($validated);
+            if ($status == Password::RESET_LINK_SENT) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => __($status),
+                    ], StatusCodes::OK);
+                }
 
-        return $status == Password::RESET_LINK_SENT
-                    ? back()->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+                return back()->with('status', __($status));
+            }
+
+            // Handle failure cases
+            $statusCode = match ($status) {
+                Password::RESET_THROTTLED => StatusCodes::RATE_LIMITED,
+                Password::INVALID_USER => StatusCodes::NOT_FOUND,
+                default => StatusCodes::BAD_REQUEST,
+            };
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => __($status),
+                    'errors' => ['email' => __($status)],
+                ], $statusCode);
+            }
+
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => __($status)]);
+
+        } catch (ValidationException $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => trans('auth.validation_failed'),
+                    'errors' => $e->errors(),
+                ], StatusCodes::VALIDATION_FAILED);
+            }
+
+            throw $e;
+        }
     }
 }
