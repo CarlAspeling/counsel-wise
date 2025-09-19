@@ -1,10 +1,12 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import { useForm, Link, usePage } from '@inertiajs/vue3'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import LoadingSpinner from '@/Components/Auth/LoadingSpinner.vue'
+import ErrorAlert from '@/Components/Auth/ErrorAlert.vue'
+import SuccessAlert from '@/Components/Auth/SuccessAlert.vue'
+import FormValidation from '@/Components/Auth/FormValidation.vue'
+import PasswordStrengthIndicator from '@/Components/PasswordStrengthIndicator.vue'
+import { validatePassword } from '@/utils/passwordValidation.js'
 
 const props = defineProps({
     email: {
@@ -15,78 +17,314 @@ const props = defineProps({
         type: String,
         required: true,
     },
-});
+    status: {
+        type: String,
+        default: ''
+    }
+})
 
+// Refs
+const emailInput = ref(null)
+
+// Form state
 const form = useForm({
     token: props.token,
     email: props.email,
     password: '',
     password_confirmation: '',
-});
+})
+
+// Alert state
+const showSuccessAlert = ref(false)
+const showErrorAlert = ref(true)
+
+// Page data
+const page = usePage()
+
+// Password validation state
+const passwordValidation = computed(() => validatePassword(form.password))
+const isPasswordValid = computed(() => passwordValidation.value.isValid)
+
+// Password confirmation validation
+const passwordsMatch = computed(() => {
+    if (!form.password_confirmation) return true // Don't show error until they start typing
+    return form.password === form.password_confirmation
+})
+
+// Computed properties
+const successMessage = computed(() => {
+    return props.status || page.props.flash?.success || ''
+})
+
+const hasFormErrors = computed(() => {
+    return Object.keys(form.errors).length > 0
+})
+
+const isFormValid = computed(() => {
+    return form.email.length > 0 &&
+           isPasswordValid.value &&
+           passwordsMatch.value
+})
+
+// Watch for success messages
+watch(successMessage, (newValue) => {
+    if (newValue) {
+        showSuccessAlert.value = true
+    }
+})
+
+// Watch for form errors
+watch(() => form.errors, (newErrors) => {
+    if (Object.keys(newErrors).length > 0) {
+        showErrorAlert.value = true
+    }
+}, { deep: true })
+
+// Methods
+const validateEmail = () => {
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+        // Basic email validation for immediate feedback
+        // Server-side validation will provide the final validation
+    }
+}
 
 const submit = () => {
+    // Reset alerts
+    showErrorAlert.value = false
+    showSuccessAlert.value = false
+
+    // Clear previous errors
+    form.clearErrors()
+
+    // Submit form
     form.post(route('password.store'), {
-        onFinish: () => {
-            form.reset('password', 'password_confirmation');
+        onSuccess: () => {
+            // Success is handled by redirect
         },
-    });
-};
+        onError: (errors) => {
+            showErrorAlert.value = true
+            // Focus on first field with error
+            nextTick(() => {
+                if (errors.email && emailInput.value) {
+                    emailInput.value.focus()
+                } else if (errors.password) {
+                    document.getElementById('password')?.focus()
+                } else if (errors.password_confirmation) {
+                    document.getElementById('password_confirmation')?.focus()
+                }
+            })
+        },
+        onFinish: () => {
+            // Reset password fields on completion if there were errors
+            if (Object.keys(form.errors).length > 0) {
+                form.reset('password', 'password_confirmation')
+            }
+        }
+    })
+}
+
+// Lifecycle
+onMounted(() => {
+    // Focus on email input when component mounts
+    if (emailInput.value) {
+        emailInput.value.focus()
+    }
+
+    // Show success message if present
+    if (successMessage.value) {
+        showSuccessAlert.value = true
+    }
+})
 </script>
 
 <template>
-    <GuestLayout>
-        <form @submit.prevent="submit">
+    <div class="min-h-screen bg-gray-100 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <!-- Header -->
             <div>
-                <InputLabel for="email" value="Email" />
+                <h1 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Reset Your Password
+                </h1>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    Please enter your new password below
+                </p>
+            </div>
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
+            <!-- Success/Error Notifications -->
+            <div class="space-y-4" role="region" aria-label="Notifications">
+                <SuccessAlert
+                    v-if="successMessage"
+                    :show="showSuccessAlert"
+                    :message="successMessage"
+                    @dismiss="showSuccessAlert = false"
                 />
 
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="new-password"
+                <ErrorAlert
+                    v-if="hasFormErrors"
+                    :show="showErrorAlert"
+                    title="Please correct the following errors:"
+                    :message="form.errors"
+                    @dismiss="showErrorAlert = false"
                 />
-
-                <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
+            <!-- Password Reset Form -->
+            <form
+                @submit.prevent="submit"
+                class="mt-8 space-y-6"
+                novalidate
+                aria-label="Password reset form"
+            >
+                <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 space-y-6">
+                    <!-- Email Field (readonly) -->
+                    <div class="mb-6">
+                        <label
+                            for="email"
+                            class="block text-gray-700 text-sm font-bold mb-2"
+                        >
+                            Email Address
+                        </label>
+                        <input
+                            id="email"
+                            ref="emailInput"
+                            v-model="form.email"
+                            type="email"
+                            readonly
+                            autocomplete="username"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight bg-gray-50 cursor-not-allowed"
+                            :aria-invalid="!!form.errors.email"
+                            :aria-describedby="form.errors.email ? 'email-error' : undefined"
+                        />
+                        <FormValidation
+                            :field-error="form.errors.email"
+                            error-id="email-error"
+                        />
+                    </div>
 
-                <TextInput
-                    id="password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password_confirmation"
-                    required
-                    autocomplete="new-password"
-                />
+                    <!-- Password Field -->
+                    <div class="mb-6">
+                        <label
+                            for="password"
+                            class="block text-gray-700 text-sm font-bold mb-2"
+                        >
+                            New Password
+                            <span class="text-red-500" aria-label="required">*</span>
+                        </label>
+                        <input
+                            id="password"
+                            v-model="form.password"
+                            type="password"
+                            required
+                            autocomplete="new-password"
+                            :disabled="form.processing"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+                            :class="[
+                                form.errors.password
+                                    ? 'border-red-500 focus:ring-red-500'
+                                    : 'border-gray-300',
+                                form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
+                            ]"
+                            :aria-invalid="!!form.errors.password"
+                            :aria-describedby="form.errors.password ? 'password-error' : undefined"
+                        />
 
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
-            </div>
+                        <!-- Password Strength Indicator -->
+                        <PasswordStrengthIndicator
+                            v-if="form.password"
+                            :password="form.password"
+                            :show-requirements="true"
+                            :show-errors="false"
+                        />
 
-            <div class="mt-4 flex items-center justify-end">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Reset Password
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
+                        <FormValidation
+                            :field-error="form.errors.password"
+                            error-id="password-error"
+                        />
+                    </div>
+
+                    <!-- Password Confirmation Field -->
+                    <div class="mb-6">
+                        <label
+                            for="password_confirmation"
+                            class="block text-gray-700 text-sm font-bold mb-2"
+                        >
+                            Confirm New Password
+                            <span class="text-red-500" aria-label="required">*</span>
+                        </label>
+                        <input
+                            id="password_confirmation"
+                            v-model="form.password_confirmation"
+                            type="password"
+                            required
+                            autocomplete="new-password"
+                            :disabled="form.processing"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+                            :class="[
+                                form.errors.password_confirmation || (form.password_confirmation && !passwordsMatch)
+                                    ? 'border-red-500 focus:ring-red-500'
+                                    : 'border-gray-300',
+                                form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
+                            ]"
+                            :aria-invalid="!!form.errors.password_confirmation || (form.password_confirmation && !passwordsMatch)"
+                            :aria-describedby="form.errors.password_confirmation ? 'password-confirmation-error' : undefined"
+                        />
+
+                        <!-- Password Match Validation -->
+                        <div v-if="form.password_confirmation && !passwordsMatch" class="mt-2 text-xs text-red-600 flex items-start">
+                            <svg class="h-4 w-4 text-red-500 mt-0.5 mr-1 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zM10 15a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Passwords do not match</span>
+                        </div>
+                        <div v-else-if="form.password_confirmation && passwordsMatch" class="mt-2 text-xs text-green-600 flex items-center">
+                            <svg class="h-3 w-3 mr-1 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Passwords match ✓</span>
+                        </div>
+
+                        <FormValidation
+                            :field-error="form.errors.password_confirmation"
+                            error-id="password-confirmation-error"
+                        />
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex items-center justify-center">
+                        <button
+                            type="submit"
+                            :disabled="form.processing || !isFormValid"
+                            class="w-full relative bg-blue-500 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:cursor-not-allowed"
+                            :aria-busy="form.processing"
+                        >
+                            <span v-if="!form.processing">Reset Password</span>
+                            <span v-else class="flex items-center justify-center">
+                                <LoadingSpinner size="sm" class="mr-2" />
+                                <span>Resetting Password...</span>
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Submit button help text -->
+                    <div v-if="form.password && !isPasswordValid" class="mt-2 text-xs text-gray-500 text-center">
+                        Please ensure your password meets all requirements above
+                    </div>
+                    <div v-else-if="form.password_confirmation && !passwordsMatch" class="mt-2 text-xs text-gray-500 text-center">
+                        Please ensure both password fields match
+                    </div>
+
+                    <!-- Back to Login Link -->
+                    <div class="mt-6 text-center">
+                        <Link
+                            :href="route('login')"
+                            class="text-blue-500 hover:text-blue-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded transition-colors duration-200"
+                            :tabindex="form.processing ? -1 : 0"
+                        >
+                            Back to Login
+                        </Link>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </template>

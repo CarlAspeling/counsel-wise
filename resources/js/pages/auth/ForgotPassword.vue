@@ -1,59 +1,216 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import { useForm, Link, usePage } from '@inertiajs/vue3'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import LoadingSpinner from '@/Components/Auth/LoadingSpinner.vue'
+import ErrorAlert from '@/Components/Auth/ErrorAlert.vue'
+import SuccessAlert from '@/Components/Auth/SuccessAlert.vue'
+import FormValidation from '@/Components/Auth/FormValidation.vue'
 
-defineProps({
+const props = defineProps({
     status: {
         type: String,
-    },
-});
+        default: ''
+    }
+})
 
+// Refs
+const emailInput = ref(null)
+
+// Form state
 const form = useForm({
     email: '',
-});
+})
+
+// Alert state
+const showSuccessAlert = ref(false)
+const showErrorAlert = ref(true)
+
+// Page data
+const page = usePage()
+
+// Computed properties
+const successMessage = computed(() => {
+    return props.status || page.props.flash?.success || ''
+})
+
+const hasFormErrors = computed(() => {
+    return Object.keys(form.errors).length > 0
+})
+
+const isFormValid = computed(() => {
+    return form.email.length > 0
+})
+
+// Watch for success messages
+watch(successMessage, (newValue) => {
+    if (newValue) {
+        showSuccessAlert.value = true
+    }
+})
+
+// Watch for form errors
+watch(() => form.errors, (newErrors) => {
+    if (Object.keys(newErrors).length > 0) {
+        showErrorAlert.value = true
+    }
+}, { deep: true })
+
+// Methods
+const validateEmail = () => {
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+        // Basic email validation for immediate feedback
+        // Server-side validation will provide the final validation
+    }
+}
 
 const submit = () => {
-    form.post(route('password.email'));
-};
+    // Reset alerts
+    showErrorAlert.value = false
+    showSuccessAlert.value = false
+
+    // Clear previous errors
+    form.clearErrors()
+
+    // Submit form
+    form.post(route('password.email'), {
+        onSuccess: () => {
+            // Success is handled by status message
+        },
+        onError: (errors) => {
+            showErrorAlert.value = true
+            // Focus on email field if error
+            nextTick(() => {
+                if (errors.email && emailInput.value) {
+                    emailInput.value.focus()
+                }
+            })
+        },
+        onFinish: () => {
+            // Form is no longer processing
+        }
+    })
+}
+
+// Lifecycle
+onMounted(() => {
+    // Focus on email input when component mounts
+    if (emailInput.value) {
+        emailInput.value.focus()
+    }
+
+    // Show success message if present
+    if (successMessage.value) {
+        showSuccessAlert.value = true
+    }
+})
 </script>
 
 <template>
-    <GuestLayout>
-        <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-            Forgot your password? No problem. Just let us know your email address and we will email you a password
-            reset link that will allow you to choose a new one.
-        </div>
-
-        <div v-if="status" class="mb-4 text-sm font-medium text-green-600 dark:text-green-400">
-            {{ status }}
-        </div>
-
-        <form @submit.prevent="submit">
+    <div class="min-h-screen bg-gray-100 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <!-- Header -->
             <div>
-                <InputLabel for="email" value="Email" />
+                <h1 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Reset Password
+                </h1>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    Enter your email address to receive a password reset link
+                </p>
+            </div>
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
+            <!-- Success/Error Notifications -->
+            <div class="space-y-4" role="region" aria-label="Notifications">
+                <SuccessAlert
+                    v-if="successMessage"
+                    :show="showSuccessAlert"
+                    :message="successMessage"
+                    @dismiss="showSuccessAlert = false"
                 />
 
-                <InputError class="mt-2" :message="form.errors.email" />
+                <ErrorAlert
+                    v-if="hasFormErrors"
+                    :show="showErrorAlert"
+                    title="Please correct the following errors:"
+                    :message="form.errors"
+                    @dismiss="showErrorAlert = false"
+                />
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Email Password Reset Link
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
+            <!-- Password Reset Form -->
+            <form
+                @submit.prevent="submit"
+                class="mt-8 space-y-6"
+                novalidate
+                aria-label="Password reset form"
+            >
+                <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8">
+                    <!-- Info Text -->
+                    <div class="mb-6 text-sm text-gray-600 text-center">
+                        Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.
+                    </div>
+
+                    <!-- Email Field -->
+                    <div class="mb-6">
+                        <label
+                            for="email"
+                            class="block text-gray-700 text-sm font-bold mb-2"
+                        >
+                            Email Address
+                            <span class="text-red-500" aria-label="required">*</span>
+                        </label>
+                        <input
+                            id="email"
+                            ref="emailInput"
+                            v-model="form.email"
+                            type="email"
+                            required
+                            autocomplete="username"
+                            :disabled="form.processing"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+                            :class="[
+                                form.errors.email
+                                    ? 'border-red-500 focus:ring-red-500'
+                                    : 'border-gray-300',
+                                form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
+                            ]"
+                            :aria-invalid="!!form.errors.email"
+                            :aria-describedby="form.errors.email ? 'email-error' : undefined"
+                            @blur="validateEmail"
+                        />
+                        <FormValidation
+                            :field-error="form.errors.email"
+                            error-id="email-error"
+                        />
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex items-center justify-center">
+                        <button
+                            type="submit"
+                            :disabled="form.processing || !isFormValid"
+                            class="w-full relative bg-blue-500 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:cursor-not-allowed"
+                            :aria-busy="form.processing"
+                        >
+                            <span v-if="!form.processing">Email Password Reset Link</span>
+                            <span v-else class="flex items-center justify-center">
+                                <LoadingSpinner size="sm" class="mr-2" />
+                                <span>Sending Reset Link...</span>
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Back to Login Link -->
+                    <div class="mt-6 text-center">
+                        <Link
+                            :href="route('login')"
+                            class="text-blue-500 hover:text-blue-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded transition-colors duration-200"
+                            :tabindex="form.processing ? -1 : 0"
+                        >
+                            Back to Login
+                        </Link>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </template>
