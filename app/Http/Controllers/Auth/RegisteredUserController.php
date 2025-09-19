@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\AccountStatus;
 use App\Enums\AccountType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\RegistrationRequest;
+use App\Http\StatusCodes;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -44,31 +45,47 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(RegistrationRequest $request): RedirectResponse|JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'surname' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'hpcsa_number' => ['required', 'string', 'max:255'],
-            'account_type' => ['required', Rule::enum(AccountType::class)],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        try {
+            $validated = $request->validated();
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'surname' => $validated['surname'],
-            'email' => $validated['email'],
-            'hpcsa_number' => $validated['hpcsa_number'],
-            'account_type' => $validated['account_type'],
-            'account_status' => AccountStatus::Active, // TODO: Set to Pending when email/HPCSA validation implemented
-            'password' => Hash::make($validated['password']),
-        ]);
+            $user = User::create([
+                'name' => $validated['name'],
+                'surname' => $validated['surname'],
+                'email' => $validated['email'],
+                'hpcsa_number' => $validated['hpcsa_number'],
+                'account_type' => $validated['account_type'],
+                'account_status' => AccountStatus::Active, // TODO: Set to Pending when email/HPCSA validation implemented
+                'password' => Hash::make($validated['password']),
+            ]);
 
-        event(new Registered($user));
+            event(new Registered($user));
+            Auth::login($user);
 
-        Auth::login($user);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => trans('auth.registration_successful'),
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'surname' => $user->surname,
+                        'email' => $user->email,
+                    ],
+                    'redirect' => route('dashboard'),
+                ], StatusCodes::CREATED);
+            }
 
-        return redirect()->route('dashboard');
+            return redirect()->route('dashboard');
+        } catch (ValidationException $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => trans('auth.registration_failed'),
+                    'errors' => $e->errors(),
+                ], StatusCodes::VALIDATION_FAILED);
+            }
+
+            throw $e;
+        }
     }
 }

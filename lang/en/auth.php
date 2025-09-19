@@ -50,6 +50,14 @@ return [
     'verification_expires_invalid' => 'Invalid verification expiration format.',
     'verification_signature_required' => 'Verification signature is required.',
     'verification_signature_invalid' => 'Invalid verification signature format.',
+    'login_successful' => 'Successfully logged in.',
+    'logout_successful' => 'Successfully logged out.',
+    'registration_successful' => 'Account created successfully.',
+    'registration_failed' => 'Registration failed. Please check your details.',
+    'validation_failed' => 'The provided data is invalid.',
+    'already_verified' => 'Your email address is already verified.',
+    'verification_sent' => 'A verification link has been sent to your email address.',
+    'rate_limited' => 'Too many requests. Please slow down.',
 
     // Attribute names
     'attribute_name' => 'first name',
