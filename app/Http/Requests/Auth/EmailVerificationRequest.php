@@ -4,8 +4,8 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class EmailVerificationRequest extends FormRequest
 {
@@ -92,7 +92,9 @@ class EmailVerificationRequest extends FormRequest
             return;
         }
 
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 2)) {
+        $maxAttempts = config('auth.rate_limits.email_verification.max_attempts', 2);
+
+        if (! RateLimiter::tooManyAttempts($this->throttleKey(), $maxAttempts)) {
             return;
         }
 
@@ -125,7 +127,8 @@ class EmailVerificationRequest extends FormRequest
     {
         // Only track rate limiting for verification notification requests
         if ($this->routeIs('verification.send')) {
-            RateLimiter::hit($this->throttleKey(), 300); // 5 minute decay
+            $decaySeconds = config('auth.rate_limits.email_verification.decay_seconds', 300);
+            RateLimiter::hit($this->throttleKey(), $decaySeconds);
         }
     }
 }

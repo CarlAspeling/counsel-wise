@@ -5,8 +5,10 @@ namespace App\Http\Requests\Auth;
 use App\Enums\AccountType;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 
 class RegistrationRequest extends FormRequest
 {
@@ -16,6 +18,14 @@ class RegistrationRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->ensureIsNotRateLimited();
     }
 
     /**
@@ -80,5 +90,45 @@ class RegistrationRequest extends FormRequest
             'account_type' => trans('auth.attribute_account_type'),
             'password' => trans('auth.attribute_password'),
         ];
+    }
+
+    /**
+     * Ensure the registration request is not rate limited.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function ensureIsNotRateLimited(): void
+    {
+        $maxAttempts = config('auth.rate_limits.registration.max_attempts', 3);
+
+        if (! RateLimiter::tooManyAttempts($this->throttleKey(), $maxAttempts)) {
+            return;
+        }
+
+        $seconds = RateLimiter::availableIn($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'email' => trans('auth.registration_throttle', [
+                'seconds' => $seconds,
+                'minutes' => ceil($seconds / 60),
+            ]),
+        ]);
+    }
+
+    /**
+     * Get the rate limiting throttle key for the request.
+     */
+    public function throttleKey(): string
+    {
+        return 'registration:'.$this->ip();
+    }
+
+    /**
+     * Handle a successful validation attempt.
+     */
+    protected function passedValidation(): void
+    {
+        $decaySeconds = config('auth.rate_limits.registration.decay_seconds', 900);
+        RateLimiter::hit($this->throttleKey(), $decaySeconds);
     }
 }

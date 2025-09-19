@@ -112,4 +112,34 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Rate Limiting
+    |--------------------------------------------------------------------------
+    |
+    | These configuration options control the rate limiting for authentication
+    | endpoints. Each limit defines the maximum number of attempts allowed
+    | before rate limiting kicks in and the decay time in seconds.
+    |
+    */
+
+    'rate_limits' => [
+        'login' => [
+            'max_attempts' => env('AUTH_LOGIN_MAX_ATTEMPTS', 5),
+            'decay_seconds' => env('AUTH_LOGIN_DECAY_SECONDS', 900), // 15 minutes
+        ],
+        'registration' => [
+            'max_attempts' => env('AUTH_REGISTRATION_MAX_ATTEMPTS', 3),
+            'decay_seconds' => env('AUTH_REGISTRATION_DECAY_SECONDS', 900), // 15 minutes
+        ],
+        'password_reset' => [
+            'max_attempts' => env('AUTH_PASSWORD_RESET_MAX_ATTEMPTS', 3),
+            'decay_seconds' => env('AUTH_PASSWORD_RESET_DECAY_SECONDS', 300), // 5 minutes
+        ],
+        'email_verification' => [
+            'max_attempts' => env('AUTH_EMAIL_VERIFICATION_MAX_ATTEMPTS', 2),
+            'decay_seconds' => env('AUTH_EMAIL_VERIFICATION_DECAY_SECONDS', 300), // 5 minutes
+        ],
+    ],
+
 ];

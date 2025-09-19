@@ -4,8 +4,8 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 
 class PasswordResetRequest extends FormRequest
 {
@@ -86,7 +86,9 @@ class PasswordResetRequest extends FormRequest
      */
     protected function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 3)) {
+        $maxAttempts = config('auth.rate_limits.password_reset.max_attempts', 3);
+
+        if (! RateLimiter::tooManyAttempts($this->throttleKey(), $maxAttempts)) {
             return;
         }
 
@@ -115,7 +117,8 @@ class PasswordResetRequest extends FormRequest
     {
         // Only track rate limiting for password reset link requests
         if ($this->routeIs('password.email')) {
-            RateLimiter::hit($this->throttleKey(), 300); // 5 minute decay
+            $decaySeconds = config('auth.rate_limits.password_reset.decay_seconds', 300);
+            RateLimiter::hit($this->throttleKey(), $decaySeconds);
         }
     }
 }

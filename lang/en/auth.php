@@ -15,7 +15,7 @@ return [
 
     'failed' => 'These credentials do not match our records.',
     'password' => 'The provided password is incorrect.',
-    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+    'throttle' => 'Too many login attempts from this location. Please wait :minutes minutes before trying again.',
 
     // Validation messages
     'email_required' => 'Email address is required.',
@@ -40,8 +40,9 @@ return [
     'account_type_required' => 'Account type is required.',
     'token_required' => 'Reset token is required.',
     'token_invalid' => 'Reset token must be text only.',
-    'password_reset_throttle' => 'Too many password reset attempts. Please try again in :seconds seconds.',
-    'email_verification_throttle' => 'Too many verification emails sent. Please try again in :seconds seconds.',
+    'password_reset_throttle' => 'Too many password reset requests from this location. For security reasons, please wait :minutes minutes before requesting another reset.',
+    'email_verification_throttle' => 'Too many verification emails have been sent from this location. Please wait :minutes minutes before requesting another verification email.',
+    'registration_throttle' => 'Too many account registration attempts from this location. Please wait :minutes minutes before trying to create another account.',
     'verification_id_required' => 'Verification ID is required.',
     'verification_id_invalid' => 'Invalid verification ID format.',
     'verification_hash_required' => 'Verification hash is required.',
