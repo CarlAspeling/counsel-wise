@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php.bat artisan make:test:*)",
+      "Bash(php.bat artisan test:*)",
+      "Bash(php.bat vendor/bin/pint:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
