@@ -4,6 +4,7 @@ namespace App\Http\Requests\Auth;
 
 use App\Enums\AccountType;
 use App\Models\User;
+use App\Services\RateLimitBypassService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
@@ -99,6 +100,12 @@ class RegistrationRequest extends FormRequest
      */
     protected function ensureIsNotRateLimited(): void
     {
+        // Check if current user should bypass rate limiting
+        $bypassService = app(RateLimitBypassService::class);
+        if ($bypassService->shouldBypass($this)) {
+            return;
+        }
+
         $maxAttempts = config('auth.rate_limits.registration.max_attempts', 3);
 
         if (! RateLimiter::tooManyAttempts($this->throttleKey(), $maxAttempts)) {

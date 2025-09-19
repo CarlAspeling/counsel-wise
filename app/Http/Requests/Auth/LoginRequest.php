@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Services\RateLimitBypassService;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -76,6 +77,12 @@ class LoginRequest extends FormRequest
      */
     public function ensureIsNotRateLimited(): void
     {
+        // Check if current user should bypass rate limiting
+        $bypassService = app(RateLimitBypassService::class);
+        if ($bypassService->shouldBypass($this)) {
+            return;
+        }
+
         $maxAttempts = config('auth.rate_limits.login.max_attempts', 5);
 
         if (! RateLimiter::tooManyAttempts($this->throttleKey(), $maxAttempts)) {

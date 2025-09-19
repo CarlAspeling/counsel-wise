@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\RateLimitController;
+use App\Http\Controllers\Admin\SecurityDashboardController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\SecurityDashboardController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -42,6 +43,16 @@ Route::middleware(['auth', 'verified', 'status', 'role:super_admin'])->prefix('a
         Route::get('/', [SecurityDashboardController::class, 'index'])->name('dashboard');
         Route::get('/events', [SecurityDashboardController::class, 'events'])->name('events');
         Route::get('/suspicious', [SecurityDashboardController::class, 'suspicious'])->name('suspicious');
+    });
+
+    // Rate Limiting Dashboard routes
+    Route::prefix('rate-limits')->name('rate_limits.')->group(function () {
+        Route::get('/', [RateLimitController::class, 'index'])->name('dashboard');
+        Route::get('/stats', [RateLimitController::class, 'stats'])->name('stats');
+        Route::get('/active', [RateLimitController::class, 'activeThrottles'])->name('active');
+        Route::get('/analytics', [RateLimitController::class, 'analytics'])->name('analytics');
+        Route::get('/export', [RateLimitController::class, 'export'])->name('export');
+        Route::post('/reset', [RateLimitController::class, 'reset'])->name('reset');
     });
 });
 
