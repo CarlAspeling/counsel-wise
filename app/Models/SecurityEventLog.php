@@ -6,12 +6,14 @@ use App\Enums\SecurityEventType;
 use App\Services\GeolocationService;
 use App\Services\SecurityAlertService;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 class SecurityEventLog extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'event_type',
         'severity',
