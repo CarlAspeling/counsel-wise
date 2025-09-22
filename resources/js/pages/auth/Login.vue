@@ -1,50 +1,53 @@
 <template>
-    <div class="min-h-screen bg-gray-100 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            <!-- Header -->
-            <div>
-                <h1 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Sign in to CounselWise
+    <div class="min-h-screen bg-white flex flex-col">
+        <!-- Header -->
+        <SiteHeader
+            :is-authenticated="!!$page.props.auth.user"
+            :user="$page.props.auth.user"
+            auth-page-type="login"
+        />
+
+        <!-- Main Content -->
+        <main class="flex-1 py-12 px-6">
+            <div class="max-w-md mx-auto">
+                <!-- Form Title -->
+                <h1 class="text-4xl lg:text-5xl font-bold text-center text-brand mb-8">
+                    Login
                 </h1>
-                <p class="mt-2 text-center text-sm text-gray-600">
-                    For HPCSA registered counsellors
-                </p>
-            </div>
 
-            <!-- Success/Error Notifications -->
-            <div class="space-y-4" role="region" aria-label="Notifications">
-                <SuccessAlert
-                    v-if="successMessage"
-                    :show="showSuccessAlert"
-                    :message="successMessage"
-                    @dismiss="showSuccessAlert = false"
-                />
+                <!-- Success/Error Notifications -->
+                <div class="space-y-4 mb-8" role="region" aria-label="Notifications">
+                    <SuccessAlert
+                        v-if="successMessage"
+                        :show="showSuccessAlert"
+                        :message="successMessage"
+                        @dismiss="showSuccessAlert = false"
+                    />
 
-                <ErrorAlert
-                    v-if="hasFormErrors"
-                    :show="showErrorAlert"
-                    title="Please correct the following errors:"
-                    :message="form.errors"
-                    @dismiss="showErrorAlert = false"
-                />
-            </div>
+                    <ErrorAlert
+                        v-if="hasFormErrors"
+                        :show="showErrorAlert"
+                        title="Please correct the following errors:"
+                        :message="form.errors"
+                        @dismiss="showErrorAlert = false"
+                    />
+                </div>
 
-            <!-- Login Form -->
-            <form
-                @submit.prevent="submit"
-                class="mt-8 space-y-6"
-                novalidate
-                aria-label="Sign in form"
-            >
-                <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8">
+                <!-- Login Form -->
+                <form
+                    @submit.prevent="submit"
+                    class="bg-white rounded-lg shadow-lg p-8 space-y-6"
+                    novalidate
+                    aria-label="Sign in form"
+                >
                     <!-- Email Field -->
-                    <div class="mb-6">
+                    <div>
                         <label
                             for="email"
-                            class="block text-gray-700 text-sm font-bold mb-2"
+                            class="form-label"
                         >
-                            Email Address
-                            <span class="text-red-500" aria-label="required">*</span>
+                            <EnvelopeIcon class="h-4 w-4 text-brand mr-2" />
+                            Email
                         </label>
                         <input
                             id="email"
@@ -53,12 +56,11 @@
                             type="email"
                             required
                             autocomplete="email"
+                            placeholder="Type your email"
                             :disabled="form.processing"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+                            class="form-input"
                             :class="[
-                                form.errors.email
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300',
+                                form.errors.email ? 'form-input-error' : '',
                                 form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
                             ]"
                             :aria-invalid="!!form.errors.email"
@@ -72,13 +74,13 @@
                     </div>
 
                     <!-- Password Field -->
-                    <div class="mb-6">
+                    <div>
                         <label
                             for="password"
-                            class="block text-gray-700 text-sm font-bold mb-2"
+                            class="form-label"
                         >
+                            <LockClosedIcon class="h-4 w-4 text-brand mr-2" />
                             Password
-                            <span class="text-red-500" aria-label="required">*</span>
                         </label>
                         <input
                             id="password"
@@ -86,12 +88,11 @@
                             type="password"
                             required
                             autocomplete="current-password"
+                            placeholder="Type your password"
                             :disabled="form.processing"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+                            class="form-input"
                             :class="[
-                                form.errors.password
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300',
+                                form.errors.password ? 'form-input-error' : '',
                                 form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
                             ]"
                             :aria-invalid="!!form.errors.password"
@@ -103,68 +104,77 @@
                         />
                     </div>
 
-                    <!-- Remember Me -->
-                    <div class="mb-6">
+                    <!-- Remember Me and Forgot Password -->
+                    <div class="flex items-center justify-between">
                         <label class="flex items-center cursor-pointer">
                             <input
                                 id="remember"
                                 v-model="form.remember"
                                 type="checkbox"
                                 :disabled="form.processing"
-                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors duration-200"
+                                class="h-4 w-4 text-brand focus:ring-brand border-gray-300 rounded transition-colors duration-200"
                                 :class="form.processing ? 'cursor-not-allowed' : 'cursor-pointer'"
                             />
                             <span class="ml-2 text-sm text-gray-700">Remember me</span>
                         </label>
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="flex items-center justify-between">
-                        <button
-                            type="submit"
-                            :disabled="form.processing || !isFormValid"
-                            class="relative bg-blue-500 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:cursor-not-allowed"
-                            :aria-busy="form.processing"
-                        >
-                            <span v-if="!form.processing">Sign In</span>
-                            <span v-else class="flex items-center">
-                                <LoadingSpinner size="sm" class="mr-2" />
-                                <span>Signing in...</span>
-                            </span>
-                        </button>
 
                         <Link
                             :href="route('password.request')"
-                            class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded transition-colors duration-200"
+                            class="text-sm text-brand hover:text-primary-700 focus-ring rounded transition-colors duration-200"
                             :tabindex="form.processing ? -1 : 0"
                         >
                             Forgot Password?
                         </Link>
                     </div>
 
+                    <!-- Submit Button -->
+                    <div class="pt-4">
+                        <button
+                            type="submit"
+                            :disabled="form.processing || !isFormValid"
+                            class="w-full btn-primary btn-large"
+                            :aria-busy="form.processing"
+                        >
+                            <span v-if="!form.processing">LOGIN</span>
+                            <span v-else class="flex items-center justify-center">
+                                <LoadingSpinner size="sm" class="mr-2" />
+                                <span>Signing in...</span>
+                            </span>
+                        </button>
+                    </div>
+
                     <!-- Register Link -->
                     <div class="mt-6 text-center">
-                        <Link
-                            :href="route('register')"
-                            class="text-blue-500 hover:text-blue-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded transition-colors duration-200"
-                            :tabindex="form.processing ? -1 : 0"
-                        >
-                            Don't have an account? Register here
-                        </Link>
+                        <p class="text-gray-600">
+                            Don't have an account?
+                            <Link
+                                :href="route('register')"
+                                class="text-brand hover:text-primary-700 font-medium focus-ring rounded transition-colors duration-200"
+                                :tabindex="form.processing ? -1 : 0"
+                            >
+                                Register here
+                            </Link>
+                        </p>
                     </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <SiteFooter />
     </div>
 </template>
 
 <script setup>
 import { useForm, Link, usePage } from '@inertiajs/vue3'
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { EnvelopeIcon, LockClosedIcon } from '@heroicons/vue/24/outline'
 import LoadingSpinner from '@/Components/Auth/LoadingSpinner.vue'
 import ErrorAlert from '@/Components/Auth/ErrorAlert.vue'
 import SuccessAlert from '@/Components/Auth/SuccessAlert.vue'
 import FormValidation from '@/Components/Auth/FormValidation.vue'
+import SiteHeader from '@/Components/Layout/SiteHeader.vue'
+import SiteFooter from '@/Components/Layout/SiteFooter.vue'
 
 // Props from the page
 const props = defineProps({

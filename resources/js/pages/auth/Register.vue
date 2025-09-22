@@ -1,11 +1,14 @@
 <script setup>
 import { useForm, Link, usePage } from '@inertiajs/vue3'
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { UserIcon, EnvelopeIcon, IdentificationIcon, UserGroupIcon, LockClosedIcon, ShieldCheckIcon } from '@heroicons/vue/24/outline'
 import LoadingSpinner from '@/Components/Auth/LoadingSpinner.vue'
 import ErrorAlert from '@/Components/Auth/ErrorAlert.vue'
 import SuccessAlert from '@/Components/Auth/SuccessAlert.vue'
 import FormValidation from '@/Components/Auth/FormValidation.vue'
 import PasswordStrengthIndicator from '@/Components/PasswordStrengthIndicator.vue'
+import SiteHeader from '@/Components/Layout/SiteHeader.vue'
+import SiteFooter from '@/Components/Layout/SiteFooter.vue'
 import { validatePassword } from '@/utils/passwordValidation.js'
 
 const props = defineProps({
@@ -149,199 +152,200 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-100 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            <!-- Header -->
-            <div>
-                <h1 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Register for CounselWise
+    <div class="min-h-screen bg-white flex flex-col">
+        <!-- Header -->
+        <SiteHeader
+            :is-authenticated="!!$page.props.auth.user"
+            :user="$page.props.auth.user"
+            auth-page-type="register"
+        />
+
+        <!-- Main Content -->
+        <main class="flex-1 py-12 px-6">
+            <div class="max-w-2xl mx-auto">
+                <!-- Form Title -->
+                <h1 class="text-4xl lg:text-5xl font-bold text-center text-brand mb-8">
+                    Create Your Account
                 </h1>
-                <p class="mt-2 text-center text-sm text-gray-600">
-                    For HPCSA registered counsellors only
-                </p>
-            </div>
 
-            <!-- Success/Error Notifications -->
-            <div class="space-y-4" role="region" aria-label="Notifications">
-                <SuccessAlert
-                    v-if="successMessage"
-                    :show="showSuccessAlert"
-                    :message="successMessage"
-                    @dismiss="showSuccessAlert = false"
-                />
+                <!-- Success/Error Notifications -->
+                <div class="space-y-4 mb-8" role="region" aria-label="Notifications">
+                    <SuccessAlert
+                        v-if="successMessage"
+                        :show="showSuccessAlert"
+                        :message="successMessage"
+                        @dismiss="showSuccessAlert = false"
+                    />
 
-                <ErrorAlert
-                    v-if="hasFormErrors"
-                    :show="showErrorAlert"
-                    title="Please correct the following errors:"
-                    :message="form.errors"
-                    @dismiss="showErrorAlert = false"
-                />
-            </div>
+                    <ErrorAlert
+                        v-if="hasFormErrors"
+                        :show="showErrorAlert"
+                        title="Please correct the following errors:"
+                        :message="form.errors"
+                        @dismiss="showErrorAlert = false"
+                    />
+                </div>
 
-            <!-- Registration Form -->
-            <form
-                @submit.prevent="submit"
-                class="mt-8 space-y-6"
-                novalidate
-                aria-label="Registration form"
-            >
-                <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 space-y-6">
-                    <!-- Name Field -->
-                    <div class="mb-6">
-                        <label
-                            for="name"
-                            class="block text-gray-700 text-sm font-bold mb-2"
-                        >
-                            Name
-                            <span class="text-red-500" aria-label="required">*</span>
-                        </label>
-                        <input
-                            id="name"
-                            ref="nameInput"
-                            v-model="form.name"
-                            type="text"
-                            required
-                            autocomplete="given-name"
-                            :disabled="form.processing"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                            :class="[
-                                form.errors.name
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300',
-                                form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
-                            ]"
-                            :aria-invalid="!!form.errors.name"
-                            :aria-describedby="form.errors.name ? 'name-error' : undefined"
-                        />
-                        <FormValidation
-                            :field-error="form.errors.name"
-                            error-id="name-error"
-                        />
+                <!-- Registration Form -->
+                <form
+                    @submit.prevent="submit"
+                    class="bg-white rounded-lg shadow-lg p-8 space-y-6"
+                    novalidate
+                    aria-label="Registration form"
+                >
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Name Field -->
+                        <div>
+                            <label
+                                for="name"
+                                class="form-label"
+                            >
+                                <UserIcon class="h-4 w-4 text-brand mr-2" />
+                                Name
+                            </label>
+                            <input
+                                id="name"
+                                ref="nameInput"
+                                v-model="form.name"
+                                type="text"
+                                required
+                                autocomplete="given-name"
+                                placeholder="Type your name"
+                                :disabled="form.processing"
+                                class="form-input"
+                                :class="[
+                                    form.errors.name ? 'form-input-error' : '',
+                                    form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
+                                ]"
+                                :aria-invalid="!!form.errors.name"
+                                :aria-describedby="form.errors.name ? 'name-error' : undefined"
+                            />
+                            <FormValidation
+                                :field-error="form.errors.name"
+                                error-id="name-error"
+                            />
+                        </div>
+
+                        <!-- Surname Field -->
+                        <div>
+                            <label
+                                for="surname"
+                                class="form-label"
+                            >
+                                <UserIcon class="h-4 w-4 text-brand mr-2" />
+                                Surname
+                            </label>
+                            <input
+                                id="surname"
+                                v-model="form.surname"
+                                type="text"
+                                required
+                                autocomplete="family-name"
+                                placeholder="Type your surname"
+                                :disabled="form.processing"
+                                class="form-input"
+                                :class="[
+                                    form.errors.surname ? 'form-input-error' : '',
+                                    form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
+                                ]"
+                                :aria-invalid="!!form.errors.surname"
+                                :aria-describedby="form.errors.surname ? 'surname-error' : undefined"
+                            />
+                            <FormValidation
+                                :field-error="form.errors.surname"
+                                error-id="surname-error"
+                            />
+                        </div>
                     </div>
 
-                    <!-- Surname Field -->
-                    <div class="mb-6">
-                        <label
-                            for="surname"
-                            class="block text-gray-700 text-sm font-bold mb-2"
-                        >
-                            Surname
-                            <span class="text-red-500" aria-label="required">*</span>
-                        </label>
-                        <input
-                            id="surname"
-                            v-model="form.surname"
-                            type="text"
-                            required
-                            autocomplete="family-name"
-                            :disabled="form.processing"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                            :class="[
-                                form.errors.surname
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300',
-                                form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
-                            ]"
-                            :aria-invalid="!!form.errors.surname"
-                            :aria-describedby="form.errors.surname ? 'surname-error' : undefined"
-                        />
-                        <FormValidation
-                            :field-error="form.errors.surname"
-                            error-id="surname-error"
-                        />
-                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    <!-- HPCSA Number Field -->
-                    <div class="mb-6">
-                        <label
-                            for="hpcsa_number"
-                            class="block text-gray-700 text-sm font-bold mb-2"
-                        >
-                            HPCSA Registration Number
-                            <span class="text-red-500" aria-label="required">*</span>
-                        </label>
-                        <input
-                            id="hpcsa_number"
-                            v-model="form.hpcsa_number"
-                            type="text"
-                            required
-                            placeholder="e.g. PS0123456"
-                            :disabled="form.processing"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                            :class="[
-                                form.errors.hpcsa_number
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300',
-                                form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
-                            ]"
-                            :aria-invalid="!!form.errors.hpcsa_number"
-                            :aria-describedby="form.errors.hpcsa_number ? 'hpcsa-error' : undefined"
-                        />
-                        <FormValidation
-                            :field-error="form.errors.hpcsa_number"
-                            error-id="hpcsa-error"
-                        />
-                    </div>
+                        <!-- Email Field -->
+                        <div>
+                            <label
+                                for="email"
+                                class="form-label"
+                            >
+                                <EnvelopeIcon class="h-4 w-4 text-brand mr-2" />
+                                Email Address
+                            </label>
+                            <input
+                                id="email"
+                                v-model="form.email"
+                                type="email"
+                                required
+                                autocomplete="username"
+                                placeholder="Type your email"
+                                :disabled="form.processing"
+                                class="form-input"
+                                :class="[
+                                    form.errors.email ? 'form-input-error' : '',
+                                    form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
+                                ]"
+                                :aria-invalid="!!form.errors.email"
+                                :aria-describedby="form.errors.email ? 'email-error' : undefined"
+                                @blur="validateEmail"
+                            />
+                            <FormValidation
+                                :field-error="form.errors.email"
+                                error-id="email-error"
+                            />
+                        </div>
 
-                    <!-- Email Field -->
-                    <div class="mb-6">
-                        <label
-                            for="email"
-                            class="block text-gray-700 text-sm font-bold mb-2"
-                        >
-                            Email Address
-                            <span class="text-red-500" aria-label="required">*</span>
-                        </label>
-                        <input
-                            id="email"
-                            v-model="form.email"
-                            type="email"
-                            required
-                            autocomplete="username"
-                            :disabled="form.processing"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                            :class="[
-                                form.errors.email
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300',
-                                form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
-                            ]"
-                            :aria-invalid="!!form.errors.email"
-                            :aria-describedby="form.errors.email ? 'email-error' : undefined"
-                            @blur="validateEmail"
-                        />
-                        <FormValidation
-                            :field-error="form.errors.email"
-                            error-id="email-error"
-                        />
+                        <!-- HPCSA Number Field -->
+                        <div>
+                            <label
+                                for="hpcsa_number"
+                                class="form-label"
+                            >
+                                <IdentificationIcon class="h-4 w-4 text-brand mr-2" />
+                                HPCSA Registration Number
+                            </label>
+                            <input
+                                id="hpcsa_number"
+                                v-model="form.hpcsa_number"
+                                type="text"
+                                required
+                                placeholder="Type your HPCSA reg. number"
+                                :disabled="form.processing"
+                                class="form-input"
+                                :class="[
+                                    form.errors.hpcsa_number ? 'form-input-error' : '',
+                                    form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
+                                ]"
+                                :aria-invalid="!!form.errors.hpcsa_number"
+                                :aria-describedby="form.errors.hpcsa_number ? 'hpcsa-error' : undefined"
+                            />
+                            <FormValidation
+                                :field-error="form.errors.hpcsa_number"
+                                error-id="hpcsa-error"
+                            />
+                        </div>
                     </div>
 
                     <!-- Account Type Field -->
                     <div class="mb-6">
                         <label
                             for="account_type"
-                            class="block text-gray-700 text-sm font-bold mb-2"
+                            class="form-label"
                         >
+                            <UserGroupIcon class="h-4 w-4 text-brand mr-2" />
                             Account Type
-                            <span class="text-red-500" aria-label="required">*</span>
                         </label>
                         <select
                             id="account_type"
                             v-model="form.account_type"
                             required
                             :disabled="form.processing"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+                            class="form-input bg-white"
                             :class="[
-                                form.errors.account_type
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300',
+                                form.errors.account_type ? 'form-input-error' : '',
                                 form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
                             ]"
                             :aria-invalid="!!form.errors.account_type"
                             :aria-describedby="form.errors.account_type ? 'account-type-error' : undefined"
                         >
-                            <option value="">Select Account Type</option>
+                            <option value="">Select account type</option>
                             <option value="counsellor_free">Counsellor (Free)</option>
                             <option value="counsellor_paid">Counsellor (Paid)</option>
                             <option value="student_rc">Student (Registered Counsellor)</option>
@@ -352,103 +356,104 @@ onMounted(() => {
                         />
                     </div>
 
-                    <!-- Password Field -->
-                    <div class="mb-6">
-                        <label
-                            for="password"
-                            class="block text-gray-700 text-sm font-bold mb-2"
-                        >
-                            Password
-                            <span class="text-red-500" aria-label="required">*</span>
-                        </label>
-                        <input
-                            id="password"
-                            v-model="form.password"
-                            type="password"
-                            required
-                            autocomplete="new-password"
-                            :disabled="form.processing"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                            :class="[
-                                form.errors.password
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300',
-                                form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
-                            ]"
-                            :aria-invalid="!!form.errors.password"
-                            :aria-describedby="form.errors.password ? 'password-error' : undefined"
-                        />
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                        <!-- Password Strength Indicator -->
-                        <PasswordStrengthIndicator
-                            v-if="form.password"
-                            :password="form.password"
-                            :show-requirements="true"
-                            :show-errors="false"
-                        />
+                        <!-- Password Field -->
+                        <div>
+                            <label
+                                for="password"
+                                class="form-label"
+                            >
+                                <LockClosedIcon class="h-4 w-4 text-brand mr-2" />
+                                Password
+                            </label>
+                            <input
+                                id="password"
+                                v-model="form.password"
+                                type="password"
+                                required
+                                autocomplete="new-password"
+                                placeholder="Type your password"
+                                :disabled="form.processing"
+                                class="form-input"
+                                :class="[
+                                    form.errors.password ? 'form-input-error' : '',
+                                    form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
+                                ]"
+                                :aria-invalid="!!form.errors.password"
+                                :aria-describedby="form.errors.password ? 'password-error' : undefined"
+                            />
 
-                        <FormValidation
-                            :field-error="form.errors.password"
-                            error-id="password-error"
-                        />
-                    </div>
+                            <!-- Password Strength Indicator -->
+                            <PasswordStrengthIndicator
+                                v-if="form.password"
+                                :password="form.password"
+                                :show-requirements="true"
+                                :show-errors="false"
+                            />
 
-                    <!-- Password Confirmation Field -->
-                    <div class="mb-6">
-                        <label
-                            for="password_confirmation"
-                            class="block text-gray-700 text-sm font-bold mb-2"
-                        >
-                            Confirm Password
-                            <span class="text-red-500" aria-label="required">*</span>
-                        </label>
-                        <input
-                            id="password_confirmation"
-                            v-model="form.password_confirmation"
-                            type="password"
-                            required
-                            autocomplete="new-password"
-                            :disabled="form.processing"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                            :class="[
-                                form.errors.password_confirmation || (form.password_confirmation && !passwordsMatch)
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300',
-                                form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
-                            ]"
-                            :aria-invalid="!!form.errors.password_confirmation || (form.password_confirmation && !passwordsMatch)"
-                            :aria-describedby="form.errors.password_confirmation ? 'password-confirmation-error' : undefined"
-                        />
-
-                        <!-- Password Match Validation -->
-                        <div v-if="form.password_confirmation && !passwordsMatch" class="mt-2 text-xs text-red-600 flex items-start">
-                            <svg class="h-4 w-4 text-red-500 mt-0.5 mr-1 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zM10 15a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-                            </svg>
-                            <span>Passwords do not match</span>
-                        </div>
-                        <div v-else-if="form.password_confirmation && passwordsMatch" class="mt-2 text-xs text-green-600 flex items-center">
-                            <svg class="h-3 w-3 mr-1 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-                            </svg>
-                            <span>Passwords match ✓</span>
+                            <FormValidation
+                                :field-error="form.errors.password"
+                                error-id="password-error"
+                            />
                         </div>
 
-                        <FormValidation
-                            :field-error="form.errors.password_confirmation"
-                            error-id="password-confirmation-error"
-                        />
+                        <!-- Password Confirmation Field -->
+                        <div>
+                            <label
+                                for="password_confirmation"
+                                class="form-label"
+                            >
+                                <ShieldCheckIcon class="h-4 w-4 text-brand mr-2" />
+                                Confirm Password
+                            </label>
+                            <input
+                                id="password_confirmation"
+                                v-model="form.password_confirmation"
+                                type="password"
+                                required
+                                autocomplete="new-password"
+                                placeholder="Confirm your password"
+                                :disabled="form.processing"
+                                class="form-input"
+                                :class="[
+                                    (form.errors.password_confirmation || (form.password_confirmation && !passwordsMatch)) ? 'form-input-error' : '',
+                                    form.processing ? 'bg-gray-50 cursor-not-allowed' : ''
+                                ]"
+                                :aria-invalid="!!form.errors.password_confirmation || (form.password_confirmation && !passwordsMatch)"
+                                :aria-describedby="form.errors.password_confirmation ? 'password-confirmation-error' : undefined"
+                            />
+
+                            <!-- Password Match Validation -->
+                            <div v-if="form.password_confirmation && !passwordsMatch" class="mt-2 text-xs text-red-600 flex items-start">
+                                <svg class="h-4 w-4 text-red-500 mt-0.5 mr-1 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zM10 15a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Passwords do not match</span>
+                            </div>
+                            <div v-else-if="form.password_confirmation && passwordsMatch" class="mt-2 text-xs text-green-600 flex items-center">
+                                <svg class="h-3 w-3 mr-1 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Passwords match ✓</span>
+                            </div>
+
+                            <FormValidation
+                                :field-error="form.errors.password_confirmation"
+                                error-id="password-confirmation-error"
+                            />
+                        </div>
                     </div>
 
                     <!-- Submit Button -->
-                    <div class="flex items-center justify-center">
+                    <div class="flex items-center justify-center pt-6">
                         <button
                             type="submit"
                             :disabled="form.processing || !canSubmit"
-                            class="w-full relative bg-blue-500 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:cursor-not-allowed"
+                            class="w-full max-w-md btn-primary btn-large"
                             :aria-busy="form.processing"
                         >
-                            <span v-if="!form.processing">Create Account</span>
+                            <span v-if="!form.processing">CREATE ACCOUNT</span>
                             <span v-else class="flex items-center justify-center">
                                 <LoadingSpinner size="sm" class="mr-2" />
                                 <span>Creating Account...</span>
@@ -457,25 +462,31 @@ onMounted(() => {
                     </div>
 
                     <!-- Submit button help text -->
-                    <div v-if="form.password && !isPasswordValid" class="mt-2 text-xs text-gray-500 text-center">
+                    <div v-if="form.password && !isPasswordValid" class="mt-4 text-sm text-gray-500 text-center">
                         Please ensure your password meets all requirements above
                     </div>
-                    <div v-else-if="form.password_confirmation && !passwordsMatch" class="mt-2 text-xs text-gray-500 text-center">
+                    <div v-else-if="form.password_confirmation && !passwordsMatch" class="mt-4 text-sm text-gray-500 text-center">
                         Please ensure both password fields match
                     </div>
 
                     <!-- Login Link -->
                     <div class="mt-6 text-center">
-                        <Link
-                            :href="route('login')"
-                            class="text-blue-500 hover:text-blue-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded transition-colors duration-200"
-                            :tabindex="form.processing ? -1 : 0"
-                        >
-                            Already have an account? Sign in here
-                        </Link>
+                        <p class="text-gray-600">
+                            Already have an account?
+                            <Link
+                                :href="route('login')"
+                                class="text-brand hover:text-teal-800 font-medium focus-ring rounded transition-colors duration-200"
+                                :tabindex="form.processing ? -1 : 0"
+                            >
+                                Log in here
+                            </Link>
+                        </p>
                     </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <SiteFooter />
     </div>
 </template>
