@@ -1,0 +1,298 @@
+// Component Styles for CounselWise
+// =============================================================================
+@use 'sass:color';
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// Form Components
+// -----------------------------------------------------------------------------
+.form-input {
+  @include form-input;
+}
+
+.form-input-error {
+  @extend .form-input;
+  border-color: $color-error;
+
+  &:focus {
+    border-color: $color-error;
+  }
+}
+
+.form-label {
+  @include form-label;
+}
+
+.form-bullet {
+  @include form-bullet;
+}
+
+.form-group {
+  margin-bottom: $spacing-xl;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.form-error {
+  color: $color-error;
+  font-size: $text-sm;
+  margin-top: $spacing-sm;
+  display: flex;
+  align-items: flex-start;
+
+  svg {
+    flex-shrink: 0;
+    margin-right: $spacing-sm;
+    margin-top: 2px;
+  }
+}
+
+.form-help {
+  color: $gray-600;
+  font-size: $text-sm;
+  margin-top: $spacing-sm;
+}
+
+// Button Components
+// -----------------------------------------------------------------------------
+.btn-primary {
+  @include button-primary;
+}
+
+.btn-secondary {
+  @include button-secondary;
+}
+
+.btn-outline {
+  @include button-base;
+  background-color: transparent;
+  color: $brand-primary;
+  border: 2px solid $brand-primary;
+  padding: calc(#{$spacing-md} - 2px) calc(#{$spacing-xl} - 2px);
+  border-radius: $radius-lg;
+
+  &:hover:not(:disabled) {
+    background-color: $brand-primary;
+    color: white;
+  }
+}
+
+.btn-ghost {
+  @include button-base;
+  background-color: transparent;
+  color: $gray-700;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+
+  &:hover:not(:disabled) {
+    background-color: $gray-100;
+  }
+}
+
+.btn-small {
+  padding: $spacing-sm $spacing-md;
+  font-size: $text-sm;
+}
+
+.btn-large {
+  padding: $spacing-lg $spacing-2xl;
+  font-size: $text-lg;
+}
+
+// Card Components
+// -----------------------------------------------------------------------------
+.card {
+  @include card;
+}
+
+.card-header {
+  @include card-header;
+}
+
+.card-body {
+  // Additional card body styles can go here
+}
+
+.card-footer {
+  border-top: 1px solid $gray-200;
+  padding-top: $spacing-lg;
+  margin-top: $spacing-xl;
+}
+
+.card-compact {
+  @extend .card;
+  padding: $spacing-lg;
+}
+
+.card-hover {
+  @extend .card;
+  @include hover-lift;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: $shadow-xl;
+  }
+}
+
+// Navigation Components
+// -----------------------------------------------------------------------------
+.nav-link {
+  color: white;
+  text-decoration: none;
+  transition: color $transition-normal;
+
+  &:hover {
+    color: $teal-400;
+  }
+
+  &.active {
+    color: $teal-400;
+  }
+}
+
+.nav-brand {
+  font-size: $text-2xl;
+  font-weight: $font-bold;
+  color: $teal-400;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+
+  svg {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+// Alert Components
+// -----------------------------------------------------------------------------
+.alert {
+  padding: $spacing-lg;
+  border-radius: $radius-lg;
+  border: 1px solid transparent;
+  margin-bottom: $spacing-lg;
+
+  &-success {
+    background-color: rgba($color-success, 0.1);
+    border-color: rgba($color-success, 0.2);
+    color: color.adjust($color-success, $lightness: -20%);
+  }
+
+  &-error {
+    background-color: rgba($color-error, 0.1);
+    border-color: rgba($color-error, 0.2);
+    color: color.adjust($color-error, $lightness: -20%);
+  }
+
+  &-warning {
+    background-color: rgba($color-warning, 0.1);
+    border-color: rgba($color-warning, 0.2);
+    color: color.adjust($color-warning, $lightness: -20%);
+  }
+
+  &-info {
+    background-color: rgba($color-info, 0.1);
+    border-color: rgba($color-info, 0.2);
+    color: color.adjust($color-info, $lightness: -20%);
+  }
+}
+
+// Badge Components
+// -----------------------------------------------------------------------------
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: $spacing-xs $spacing-sm;
+  font-size: $text-xs;
+  font-weight: $font-medium;
+  border-radius: $radius-full;
+
+  &-primary {
+    background-color: $brand-primary;
+    color: white;
+  }
+
+  &-secondary {
+    background-color: $gray-200;
+    color: $gray-800;
+  }
+
+  &-success {
+    background-color: $color-success;
+    color: white;
+  }
+
+  &-error {
+    background-color: $color-error;
+    color: white;
+  }
+}
+
+// Loading Components
+// -----------------------------------------------------------------------------
+.loading-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba($brand-primary, 0.3);
+  border-radius: $radius-full;
+  border-top-color: $brand-primary;
+  animation: spin 1s ease-in-out infinite;
+
+  &.large {
+    width: 2rem;
+    height: 2rem;
+    border-width: 3px;
+  }
+
+  &.small {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-width: 1px;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Modal Components
+// -----------------------------------------------------------------------------
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: $z-modal;
+  @include flex-center;
+}
+
+.modal-content {
+  @include card;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: $spacing-lg;
+  right: $spacing-lg;
+  background: none;
+  border: none;
+  font-size: $text-xl;
+  cursor: pointer;
+  color: $gray-500;
+
+  &:hover {
+    color: $gray-700;
+  }
+}

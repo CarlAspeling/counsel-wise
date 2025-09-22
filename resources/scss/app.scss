@@ -1,0 +1,553 @@
+// CounselWise Main SCSS File
+// =============================================================================
+
+// Import SCSS Variables & Mixins (must be first)
+@use 'variables' as *;
+@use 'mixins' as *;
+@use 'sass:color';
+
+// Import CSS Custom Properties (Design Tokens)
+@import '../css/variables.css';
+
+// Import Tailwind CSS
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// Custom Base Styles
+// -----------------------------------------------------------------------------
+@layer base {
+  // Font imports (uncomment if you want to use Google Fonts)
+  // @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased;
+    font-family: $font-family-sans;
+  }
+
+  // Custom focus styles
+  :focus-visible {
+    outline: 2px solid $brand-primary;
+    outline-offset: 2px;
+  }
+
+  // Custom selection styles
+  ::selection {
+    background-color: rgba($brand-primary, 0.2);
+    color: $brand-secondary;
+  }
+}
+
+// Custom Component Layer (combines Tailwind @layer components with SCSS)
+// -----------------------------------------------------------------------------
+@layer components {
+  // Form Components
+  .form-input {
+    @include form-input;
+  }
+
+  .form-input-error {
+    @extend .form-input;
+    border-color: $color-error;
+
+    &:focus {
+      border-color: $color-error;
+    }
+  }
+
+  .form-label {
+    @include form-label;
+  }
+
+  .form-bullet {
+    @include form-bullet;
+  }
+
+  .form-group {
+    margin-bottom: $spacing-xl;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .form-error {
+    color: $color-error;
+    font-size: $text-sm;
+    margin-top: $spacing-sm;
+    display: flex;
+    align-items: flex-start;
+
+    svg {
+      flex-shrink: 0;
+      margin-right: $spacing-sm;
+      margin-top: 2px;
+    }
+  }
+
+  .form-help {
+    color: $gray-600;
+    font-size: $text-sm;
+    margin-top: $spacing-sm;
+  }
+
+  // Button Components
+  .btn-primary {
+    @include button-primary;
+  }
+
+  .btn-secondary {
+    @include button-secondary;
+  }
+
+  .btn-outline {
+    @include button-base;
+    background-color: transparent;
+    color: $brand-primary;
+    border: 2px solid $brand-primary;
+    padding: calc(#{$spacing-md} - 2px) calc(#{$spacing-xl} - 2px);
+    border-radius: $radius-lg;
+
+    &:hover:not(:disabled) {
+      background-color: $brand-primary;
+      color: white;
+    }
+  }
+
+  .btn-ghost {
+    @include button-base;
+    background-color: transparent;
+    color: $gray-700;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $radius-md;
+
+    &:hover:not(:disabled) {
+      background-color: $gray-100;
+    }
+  }
+
+  .btn-small {
+    padding: $spacing-sm $spacing-md;
+    font-size: $text-sm;
+  }
+
+  .btn-large {
+    padding: $spacing-lg $spacing-2xl;
+    font-size: $text-lg;
+  }
+
+  // Card Components
+  .card {
+    @include card;
+  }
+
+  .card-header {
+    @include card-header;
+  }
+
+  .card-body {
+    // Additional card body styles can go here
+  }
+
+  .card-footer {
+    border-top: 1px solid $gray-200;
+    padding-top: $spacing-lg;
+    margin-top: $spacing-xl;
+  }
+
+  .card-compact {
+    @extend .card;
+    padding: $spacing-lg;
+  }
+
+  .card-hover {
+    @extend .card;
+    @include hover-lift;
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: $shadow-xl;
+    }
+  }
+
+  // Navigation Components
+  .nav-link {
+    color: white;
+    text-decoration: none;
+    transition: color $transition-normal;
+
+    &:hover {
+      color: $primary-300;
+    }
+
+    &.active {
+      color: $primary-300;
+    }
+  }
+
+  .nav-brand {
+    font-size: $text-2xl;
+    font-weight: $font-bold;
+    color: $primary-300;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    svg {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+
+  // Alert Components
+  .alert {
+    padding: $spacing-lg;
+    border-radius: $radius-lg;
+    border: 1px solid transparent;
+    margin-bottom: $spacing-lg;
+
+    &-success {
+      background-color: rgba($color-success, 0.1);
+      border-color: rgba($color-success, 0.2);
+      color: color.adjust($color-success, $lightness: -20%);
+    }
+
+    &-error {
+      background-color: rgba($color-error, 0.1);
+      border-color: rgba($color-error, 0.2);
+      color: color.adjust($color-error, $lightness: -20%);
+    }
+
+    &-warning {
+      background-color: rgba($color-warning, 0.1);
+      border-color: rgba($color-warning, 0.2);
+      color: color.adjust($color-warning, $lightness: -20%);
+    }
+
+    &-info {
+      background-color: rgba($color-info, 0.1);
+      border-color: rgba($color-info, 0.2);
+      color: color.adjust($color-info, $lightness: -20%);
+    }
+  }
+
+  // Badge Components
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: $spacing-xs $spacing-sm;
+    font-size: $text-xs;
+    font-weight: $font-medium;
+    border-radius: $radius-full;
+
+    &-primary {
+      background-color: $brand-primary;
+      color: white;
+    }
+
+    &-secondary {
+      background-color: $gray-200;
+      color: $gray-800;
+    }
+
+    &-success {
+      background-color: $color-success;
+      color: white;
+    }
+
+    &-error {
+      background-color: $color-error;
+      color: white;
+    }
+  }
+
+  // Loading Components
+  .loading-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba($brand-primary, 0.3);
+    border-radius: $radius-full;
+    border-top-color: $brand-primary;
+    animation: spin 1s ease-in-out infinite;
+
+    &.large {
+      width: 2rem;
+      height: 2rem;
+      border-width: 3px;
+    }
+
+    &.small {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-width: 1px;
+    }
+  }
+
+  // Override Tailwind form plugin styles if needed
+  .form-input {
+    @apply appearance-none;
+
+    &[type="checkbox"],
+    &[type="radio"] {
+      @apply appearance-auto;
+    }
+  }
+
+  // Custom Tailwind component utilities
+  .btn {
+    @apply inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .input {
+    @apply appearance-none border border-gray-300 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-transparent;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+}
+
+// Custom Utilities Layer
+// -----------------------------------------------------------------------------
+@layer utilities {
+  // Brand Utilities
+  .text-brand {
+    color: $brand-primary;
+  }
+
+  .bg-brand {
+    background-color: $brand-primary;
+  }
+
+  .border-brand {
+    border-color: $brand-primary;
+  }
+
+  .text-brand-secondary {
+    color: $brand-secondary;
+  }
+
+  .bg-brand-secondary {
+    background-color: $brand-secondary;
+  }
+
+  // Layout Utilities
+  .container-custom {
+    @include container;
+  }
+
+  .flex-center {
+    @include flex-center;
+  }
+
+  .flex-between {
+    @include flex-between;
+  }
+
+  .section-padding {
+    padding: $spacing-2xl 0;
+
+    @include desktop-up {
+      padding: $spacing-3xl 0;
+    }
+  }
+
+  // Typography Utilities
+  .heading-1 {
+    @include heading-1;
+  }
+
+  .heading-2 {
+    @include heading-2;
+  }
+
+  .heading-3 {
+    @include heading-3;
+  }
+
+  .body-large {
+    @include body-large;
+  }
+
+  .body-base {
+    @include body-base;
+  }
+
+  .body-small {
+    @include body-small;
+  }
+
+  .text-muted {
+    color: $gray-600;
+  }
+
+  .text-light {
+    color: $gray-500;
+  }
+
+  .text-strong {
+    font-weight: $font-semibold;
+  }
+
+  // Animation Utilities
+  .fade-in {
+    @include fade-in;
+  }
+
+  .slide-up {
+    @include slide-up;
+  }
+
+  .hover-lift {
+    @include hover-lift;
+  }
+
+  .slide-in {
+    transform: translateY(1rem);
+    opacity: 0;
+    transition: all $transition-normal ease-out;
+
+    &.active {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  // Visibility Utilities
+  .visually-hidden {
+    @include visually-hidden;
+  }
+
+  .mobile-only {
+    @include tablet-up {
+      display: none !important;
+    }
+  }
+
+  .desktop-only {
+    @include mobile-only {
+      display: none !important;
+    }
+  }
+
+  // Focus Utilities
+  .focus-ring {
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba($brand-primary, 0.5);
+    }
+  }
+
+  .focus-visible {
+    outline: none;
+
+    &:focus-visible {
+      box-shadow: 0 0 0 2px rgba($brand-primary, 0.5);
+    }
+  }
+
+  // Custom scrollbar styles
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: $gray-400 $gray-100;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: $gray-100;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $gray-400;
+      border-radius: $radius-full;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: $gray-500;
+    }
+  }
+
+  // Additional utility customizations
+  .transition-smooth {
+    transition: all $transition-normal cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .transition-bounce {
+    transition: all $transition-normal cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  // Print utilities
+  @media print {
+    .print-hidden {
+      display: none !important;
+    }
+
+    .print-visible {
+      display: block !important;
+    }
+  }
+}
+
+// Custom Keyframes and Animations
+// -----------------------------------------------------------------------------
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// Dark Mode Support (if you plan to implement it)
+// -----------------------------------------------------------------------------
+@media (prefers-color-scheme: dark) {
+  // Dark mode styles can be added here when needed
+  // This works in conjunction with the CSS variables in variables.css
+}

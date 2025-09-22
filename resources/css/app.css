@@ -1,3 +1,99 @@
-﻿@tailwind base;
+@import "./variables.css";
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom Base Styles */
+@layer base {
+  /* Custom font imports if needed */
+  /* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'); */
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased;
+  }
+}
+
+/* Custom Component Styles */
+@layer components {
+  /* Form Components */
+  .form-input {
+    @apply w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-teal-500 transition-colors duration-200;
+  }
+
+  .form-input-error {
+    @apply border-red-500 focus:border-red-500;
+  }
+
+  .form-label {
+    @apply flex items-center text-teal-600 font-medium mb-3;
+  }
+
+  .form-bullet {
+    @apply w-3 h-3 bg-teal-500 rounded-full mr-3;
+  }
+
+  /* Button Components */
+  .btn-primary {
+    @apply bg-teal-500 hover:bg-teal-600 disabled:bg-gray-400 text-white font-bold py-4 px-8 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all duration-200 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200;
+  }
+
+  /* Card Components */
+  .card {
+    @apply bg-white rounded-lg shadow-lg p-8;
+  }
+
+  .card-header {
+    @apply border-b border-gray-200 pb-4 mb-6;
+  }
+
+  /* Navigation Components */
+  .nav-link {
+    @apply text-white hover:text-teal-400 transition-colors duration-200;
+  }
+
+  .nav-link-active {
+    @apply text-teal-400;
+  }
+}
+
+/* Custom Utility Classes */
+@layer utilities {
+  /* Brand-specific utilities */
+  .text-brand {
+    @apply text-teal-600;
+  }
+
+  .bg-brand {
+    @apply bg-teal-500;
+  }
+
+  .border-brand {
+    @apply border-teal-500;
+  }
+
+  /* Layout utilities */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-6 lg:px-8;
+  }
+
+  /* Animation utilities */
+  .fade-in {
+    @apply opacity-0 animate-pulse;
+  }
+
+  .slide-in {
+    @apply transform translate-y-4 opacity-0 transition-all duration-300 ease-out;
+  }
+
+  .slide-in-active {
+    @apply transform translate-y-0 opacity-100;
+  }
+}

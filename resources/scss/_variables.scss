@@ -1,0 +1,149 @@
+// SCSS Variables for CounselWise
+// =============================================================================
+
+// Brand Colors
+// -----------------------------------------------------------------------------
+$brand-primary: #4F9288;    // Primary brand color from Figma
+$brand-secondary: #2F4A56;  // Secondary brand color from Figma
+$brand-accent: #6AA49C;     // Lighter accent based on primary
+
+// Color Palette - Primary Brand (Sage Green/Teal)
+$primary-50: #f0f9f7;
+$primary-100: #dbf0ed;
+$primary-200: #b9e2dc;
+$primary-300: #8bccc4;
+$primary-400: #6aa49c;
+$primary-500: #4f9288;     // Brand Primary
+$primary-600: #3f7a70;
+$primary-700: #35635c;
+$primary-800: #2d504a;
+$primary-900: #28433f;
+
+// Color Palette - Secondary Brand (Blue Gray)
+$secondary-50: #f8fafb;
+$secondary-100: #f1f4f6;
+$secondary-200: #e0e7eb;
+$secondary-300: #c4d1d8;
+$secondary-400: #9fb1bb;
+$secondary-500: #7a8e9a;
+$secondary-600: #637580;
+$secondary-700: #546268;
+$secondary-800: #49565c;
+$secondary-900: #2f4a56;    // Brand Secondary
+
+// Legacy Teal Palette (for backward compatibility)
+$teal-50: #f0f9f7;
+$teal-100: #dbf0ed;
+$teal-200: #b9e2dc;
+$teal-300: #8bccc4;
+$teal-400: #6aa49c;
+$teal-500: #4f9288;
+$teal-600: #3f7a70;
+$teal-700: #35635c;
+$teal-800: #2d504a;
+$teal-900: #28433f;
+
+// Legacy Slate Palette (for backward compatibility)
+$slate-50: #f8fafb;
+$slate-100: #f1f4f6;
+$slate-200: #e0e7eb;
+$slate-300: #c4d1d8;
+$slate-400: #9fb1bb;
+$slate-500: #7a8e9a;
+$slate-600: #637580;
+$slate-700: #546268;
+$slate-800: #49565c;
+$slate-900: #2f4a56;
+
+// Gray Palette
+$gray-50: #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+
+// Semantic Colors
+$color-success: #4f9288;    // Using our primary brand color for success
+$color-warning: #f59e0b;    // Amber/Orange for warnings
+$color-error: #dc2626;      // Red for errors
+$color-info: #2563eb;       // Blue for informational messages
+
+// Typography
+// -----------------------------------------------------------------------------
+$font-family-sans: 'Inter', 'Figtree', system-ui, -apple-system, sans-serif;
+$font-family-mono: 'Fira Code', 'Cascadia Code', Consolas, monospace;
+
+// Font Sizes
+$text-xs: 0.75rem;
+$text-sm: 0.875rem;
+$text-base: 1rem;
+$text-lg: 1.125rem;
+$text-xl: 1.25rem;
+$text-2xl: 1.5rem;
+$text-3xl: 1.875rem;
+$text-4xl: 2.25rem;
+$text-5xl: 3rem;
+
+// Font Weights
+$font-light: 300;
+$font-normal: 400;
+$font-medium: 500;
+$font-semibold: 600;
+$font-bold: 700;
+$font-black: 900;
+
+// Spacing
+// -----------------------------------------------------------------------------
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-2xl: 3rem;
+$spacing-3xl: 4rem;
+
+// Border Radius
+// -----------------------------------------------------------------------------
+$radius-none: 0;
+$radius-sm: 0.25rem;
+$radius-md: 0.5rem;
+$radius-lg: 0.75rem;
+$radius-xl: 1rem;
+$radius-2xl: 1.5rem;
+$radius-3xl: 2rem;
+$radius-full: 9999px;
+
+// Shadows
+// -----------------------------------------------------------------------------
+$shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+$shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+$shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+$shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+// Transitions
+// -----------------------------------------------------------------------------
+$transition-fast: 150ms ease-in-out;
+$transition-normal: 250ms ease-in-out;
+$transition-slow: 500ms ease-in-out;
+
+// Breakpoints
+// -----------------------------------------------------------------------------
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+$breakpoint-2xl: 1536px;
+
+// Z-index
+// -----------------------------------------------------------------------------
+$z-dropdown: 1000;
+$z-sticky: 1020;
+$z-fixed: 1030;
+$z-modal: 1040;
+$z-popover: 1050;
+$z-tooltip: 1060;
