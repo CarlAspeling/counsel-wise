@@ -233,8 +233,37 @@ class RateLimitController extends Controller
      */
     protected function findThrottleKeys(string $pattern): array
     {
-        // Simplified implementation - you might use Redis SCAN or similar
-        return [];
+        try {
+            // For database cache, we need to query the cache table directly
+            $cacheTable = config('cache.stores.database.table', 'cache');
+            $prefix = config('cache.prefix', '');
+
+            // Convert wildcard pattern to SQL LIKE pattern
+            $likePattern = str_replace('*', '%', $pattern);
+            if ($prefix) {
+                $likePattern = $prefix.$likePattern;
+            }
+
+            $keys = \DB::table($cacheTable)
+                ->where('key', 'like', $likePattern)
+                ->where('expiration', '>', time())
+                ->pluck('key')
+                ->map(function ($key) use ($prefix) {
+                    // Remove cache prefix if it exists
+                    return $prefix ? str_replace($prefix, '', $key) : $key;
+                })
+                ->toArray();
+
+            return $keys;
+        } catch (\Exception $e) {
+            // Log error and return empty array as fallback
+            logger()->warning('Failed to find throttle keys', [
+                'pattern' => $pattern,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [];
+        }
     }
 
     /**

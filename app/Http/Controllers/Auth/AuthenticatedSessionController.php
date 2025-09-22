@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\AccountType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\StatusCodes;
@@ -41,14 +42,22 @@ class AuthenticatedSessionController extends Controller
             $request->authenticate();
             $request->session()->regenerate();
 
+            // Determine the redirect URL based on user role
+            $redirectUrl = $this->getRedirectUrl();
+
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => trans('auth.login_successful'),
-                    'redirect' => url()->intended('/dashboard'),
+                    'redirect' => $redirectUrl,
                 ], StatusCodes::OK);
             }
 
-            return redirect()->intended('/dashboard');
+            // For super admins, always redirect to admin dashboard regardless of intended URL
+            if (Auth::user()->account_type === AccountType::SuperAdmin) {
+                return redirect($redirectUrl);
+            }
+
+            return redirect()->intended($redirectUrl);
         } catch (ValidationException $e) {
             if ($request->expectsJson()) {
                 return response()->json([
@@ -59,6 +68,22 @@ class AuthenticatedSessionController extends Controller
 
             throw $e;
         }
+    }
+
+    /**
+     * Get the redirect URL based on the authenticated user's account type.
+     */
+    private function getRedirectUrl(): string
+    {
+        $user = Auth::user();
+
+        // Redirect super admins to the admin dashboard
+        if ($user->account_type === AccountType::SuperAdmin) {
+            return '/admin/dashboard';
+        }
+
+        // Default redirect for all other users
+        return '/dashboard';
     }
 
     /**
