@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Enums\AccountStatus;
-use App\Enums\AccountType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegistrationRequest;
 use App\Http\StatusCodes;
@@ -56,7 +55,7 @@ class RegisteredUserController extends Controller
                 'email' => $validated['email'],
                 'hpcsa_number' => $validated['hpcsa_number'],
                 'account_type' => $validated['account_type'],
-                'account_status' => AccountStatus::Active, // TODO: Set to Pending when email/HPCSA validation implemented
+                'account_status' => AccountStatus::Pending, // User must verify email before account becomes active
                 'password' => Hash::make($validated['password']),
             ]);
 
@@ -72,11 +71,11 @@ class RegisteredUserController extends Controller
                         'surname' => $user->surname,
                         'email' => $user->email,
                     ],
-                    'redirect' => route('dashboard'),
+                    'redirect' => route('verification.notice'),
                 ], StatusCodes::CREATED);
             }
 
-            return redirect()->route('dashboard');
+            return redirect()->route('verification.notice');
         } catch (ValidationException $e) {
             if ($request->expectsJson()) {
                 return response()->json([
