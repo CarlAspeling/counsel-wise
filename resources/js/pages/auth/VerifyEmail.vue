@@ -121,6 +121,17 @@ onMounted(() => {
                     link we just emailed to you? If you didn't receive the email, we will gladly send you another.
                 </div>
 
+                <!-- Navigation Help -->
+                <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <h3 class="text-sm font-medium text-blue-800 mb-2">What's next?</h3>
+                    <ul class="text-xs text-blue-700 space-y-1">
+                        <li>• Check your email inbox (and spam folder)</li>
+                        <li>• Click the verification link in the email</li>
+                        <li>• You'll be automatically redirected to your dashboard</li>
+                        <li>• Or resend the verification email below if needed</li>
+                    </ul>
+                </div>
+
                 <!-- Actions -->
                 <form @submit.prevent="submit" class="space-y-6">
                     <!-- Resend Button -->
@@ -139,16 +150,14 @@ onMounted(() => {
                         </button>
                     </div>
 
-                    <!-- Logout Link -->
+                    <!-- Back to Home Link -->
                     <div class="mt-6 text-center">
                         <Link
-                            :href="route('logout')"
-                            method="post"
-                            as="button"
+                            href="/"
                             class="text-blue-500 hover:text-blue-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded transition-colors duration-200"
                             :tabindex="form.processing ? -1 : 0"
                         >
-                            Log Out
+                            Back to Home
                         </Link>
                     </div>
                 </form>

@@ -26,6 +26,9 @@ class VerifyEmailController extends Controller
         }
 
         if ($request->user()->markEmailAsVerified()) {
+            // Update account status to Active after email verification
+            $request->user()->update(['account_status' => \App\Enums\AccountStatus::Active]);
+
             event(new Verified($request->user()));
 
             SecurityEventLog::createEvent(

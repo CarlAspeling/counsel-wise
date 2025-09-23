@@ -58,8 +58,26 @@ const successMessage = computed(() => {
     return props.status || page.props.flash?.success || ''
 })
 
+// Separate field validation errors from system errors
+const fieldErrors = computed(() => {
+    const { throttle, ...errors } = form.errors
+    return errors
+})
+
+const systemErrors = computed(() => {
+    return form.errors.throttle ? { throttle: form.errors.throttle } : {}
+})
+
+const hasFieldErrors = computed(() => {
+    return Object.keys(fieldErrors.value).length > 0
+})
+
+const hasSystemErrors = computed(() => {
+    return Object.keys(systemErrors.value).length > 0
+})
+
 const hasFormErrors = computed(() => {
-    return Object.keys(form.errors).length > 0
+    return hasFieldErrors.value || hasSystemErrors.value
 })
 
 const isFormValid = computed(() => {
@@ -177,11 +195,21 @@ onMounted(() => {
                         @dismiss="showSuccessAlert = false"
                     />
 
+                    <!-- System-level errors (throttling, etc.) -->
                     <ErrorAlert
-                        v-if="hasFormErrors"
+                        v-if="hasSystemErrors"
+                        :show="showErrorAlert"
+                        title="Unable to Process Request"
+                        :message="systemErrors"
+                        @dismiss="showErrorAlert = false"
+                    />
+
+                    <!-- Field validation errors -->
+                    <ErrorAlert
+                        v-if="hasFieldErrors && !hasSystemErrors"
                         :show="showErrorAlert"
                         title="Please correct the following errors:"
-                        :message="form.errors"
+                        :message="fieldErrors"
                         @dismiss="showErrorAlert = false"
                     />
                 </div>
