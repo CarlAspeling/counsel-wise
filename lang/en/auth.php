@@ -59,6 +59,7 @@ return [
     'already_verified' => 'Your email address is already verified.',
     'verification_sent' => 'A verification link has been sent to your email address.',
     'rate_limited' => 'Too many requests. Please slow down.',
+    'throttle_exceeded' => 'Too many login attempts. Please try again later.',
 
     // Attribute names
     'attribute_name' => 'first name',

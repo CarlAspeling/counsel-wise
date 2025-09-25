@@ -27,7 +27,7 @@ class LogSecurityEvents
             $response = $next($request);
 
             // Log successful authentication events
-            $this->logSuccessfulEvents($request, $response, $user);
+            $this->logSuccessfulEvents($request, $response, $user, $startTime);
 
             return $response;
         } catch (ValidationException $e) {
@@ -44,7 +44,7 @@ class LogSecurityEvents
     /**
      * Log successful authentication events based on the route and response.
      */
-    protected function logSuccessfulEvents(Request $request, Response $response, $user): void
+    protected function logSuccessfulEvents(Request $request, Response $response, $user, float $startTime): void
     {
         $routeName = $request->route()?->getName();
         $statusCode = $response->getStatusCode();
@@ -58,7 +58,7 @@ class LogSecurityEvents
             'route' => $routeName,
             'method' => $request->method(),
             'status_code' => $statusCode,
-            'response_time_ms' => round((microtime(true) - $this->startTime ?? 0) * 1000, 2),
+            'response_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
         ];
 
         match ($routeName) {
@@ -105,6 +105,11 @@ class LogSecurityEvents
             'register' => SecurityEventLog::logRegistrationFailed(
                 $request->input('email'),
                 array_merge($metadata, ['errors' => $errors])
+            ),
+            'verification.send' => SecurityEventLog::createEvent(
+                SecurityEventType::EMAIL_VERIFICATION_FAILED,
+                user: Auth::user(),
+                metadata: array_merge($metadata, ['errors' => $errors])
             ),
             default => null,
         };
@@ -202,7 +207,7 @@ class LogSecurityEvents
     protected function logEmailVerificationRequest(Request $request, array $metadata): void
     {
         SecurityEventLog::createEvent(
-            SecurityEventType::EMAIL_VERIFICATION_REQUESTED,
+            SecurityEventType::EMAIL_VERIFICATION_SENT,
             user: Auth::user(),
             metadata: $metadata
         );

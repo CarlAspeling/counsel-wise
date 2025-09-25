@@ -18,7 +18,9 @@ enum SecurityEventType: string
     case PASSWORD_RESET_RATE_LIMITED = 'password_reset_rate_limited';
 
     case EMAIL_VERIFICATION_REQUESTED = 'email_verification_requested';
+    case EMAIL_VERIFICATION_SENT = 'email_verification_sent';
     case EMAIL_VERIFICATION_SUCCESS = 'email_verification_success';
+    case EMAIL_VERIFICATION_FAILED = 'email_verification_failed';
     case EMAIL_VERIFICATION_RATE_LIMITED = 'email_verification_rate_limited';
 
     case PASSWORD_CHANGED = 'password_changed';
@@ -32,6 +34,7 @@ enum SecurityEventType: string
     case SUSPICIOUS_ACTIVITY = 'suspicious_activity';
     case MULTIPLE_LOGIN_ATTEMPTS = 'multiple_login_attempts';
     case UNUSUAL_LOCATION = 'unusual_location';
+    case RATE_LIMIT_EXCEEDED = 'rate_limit_exceeded';
 
     /**
      * Get a human-readable description of the event type.
@@ -53,7 +56,9 @@ enum SecurityEventType: string
             self::PASSWORD_RESET_RATE_LIMITED => 'Password reset request blocked due to rate limiting',
 
             self::EMAIL_VERIFICATION_REQUESTED => 'Email verification link requested',
+            self::EMAIL_VERIFICATION_SENT => 'Email verification link sent',
             self::EMAIL_VERIFICATION_SUCCESS => 'Email verified successfully',
+            self::EMAIL_VERIFICATION_FAILED => 'Email verification failed',
             self::EMAIL_VERIFICATION_RATE_LIMITED => 'Email verification request blocked due to rate limiting',
 
             self::PASSWORD_CHANGED => 'Password changed successfully',
@@ -67,6 +72,7 @@ enum SecurityEventType: string
             self::SUSPICIOUS_ACTIVITY => 'Suspicious activity detected',
             self::MULTIPLE_LOGIN_ATTEMPTS => 'Multiple failed login attempts detected',
             self::UNUSUAL_LOCATION => 'Login from unusual location detected',
+            self::RATE_LIMIT_EXCEEDED => 'Rate limit exceeded',
         };
     }
 
@@ -85,11 +91,13 @@ enum SecurityEventType: string
             self::ACCOUNT_UNLOCKED => 'info',
 
             self::PASSWORD_RESET_REQUESTED,
-            self::EMAIL_VERIFICATION_REQUESTED => 'notice',
+            self::EMAIL_VERIFICATION_REQUESTED,
+            self::EMAIL_VERIFICATION_SENT => 'notice',
 
             self::LOGIN_FAILED,
             self::REGISTRATION_FAILED,
             self::PASSWORD_RESET_FAILED,
+            self::EMAIL_VERIFICATION_FAILED,
             self::PASSWORD_CHANGE_FAILED => 'warning',
 
             self::LOGIN_RATE_LIMITED,
@@ -97,7 +105,8 @@ enum SecurityEventType: string
             self::EMAIL_VERIFICATION_RATE_LIMITED,
             self::PASSWORD_CHANGE_RATE_LIMITED,
             self::MULTIPLE_LOGIN_ATTEMPTS,
-            self::UNUSUAL_LOCATION => 'alert',
+            self::UNUSUAL_LOCATION,
+            self::RATE_LIMIT_EXCEEDED => 'alert',
 
             self::ACCOUNT_LOCKED,
             self::ACCOUNT_SUSPENDED,

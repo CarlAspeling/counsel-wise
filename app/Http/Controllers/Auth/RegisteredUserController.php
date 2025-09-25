@@ -6,6 +6,7 @@ use App\Enums\AccountStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegistrationRequest;
 use App\Http\StatusCodes;
+use App\Models\SecurityEventLog;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
@@ -46,6 +47,8 @@ class RegisteredUserController extends Controller
      */
     public function store(RegistrationRequest $request): RedirectResponse|JsonResponse
     {
+        $startTime = microtime(true);
+
         try {
             $validated = $request->validated();
 
@@ -62,6 +65,14 @@ class RegisteredUserController extends Controller
             event(new Registered($user));
             Auth::login($user);
 
+            // Log successful registration security event
+            SecurityEventLog::logRegistrationSuccess($user, [
+                'user_agent' => $request->userAgent(),
+                'account_type' => $user->account_type->value,
+                'hpcsa_number' => $user->hpcsa_number,
+                'response_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
+            ]);
+
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => trans('auth.registration_successful'),
@@ -77,6 +88,14 @@ class RegisteredUserController extends Controller
 
             return redirect()->route('verification.notice');
         } catch (ValidationException $e) {
+            // Log failed registration security event
+            SecurityEventLog::logRegistrationFailed($request->input('email'), [
+                'user_agent' => $request->userAgent(),
+                'validation_errors' => array_keys($e->errors()),
+                'attempted_account_type' => $request->input('account_type'),
+                'response_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
+            ]);
+
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => trans('auth.registration_failed'),
