@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Exceptions\RateLimitExceededException;
+use App\Models\SecurityEventLog;
 use App\Services\RateLimitBypassService;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
@@ -93,12 +95,28 @@ class LoginRequest extends FormRequest
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
-        throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
-        ]);
+        // Log rate limit exceeded security event
+        SecurityEventLog::createEvent(
+            \App\Enums\SecurityEventType::RATE_LIMIT_EXCEEDED,
+            email: $this->string('email'),
+            metadata: [
+                'attempts_remaining' => 0,
+                'lockout_seconds' => $seconds,
+                'lockout_minutes' => ceil($seconds / 60),
+                'throttle_key' => $this->throttleKey(),
+                'max_attempts' => $maxAttempts,
+            ]
+        );
+
+        throw new RateLimitExceededException(
+            errors: [
+                'email' => [trans('auth.throttle', [
+                    'seconds' => $seconds,
+                    'minutes' => ceil($seconds / 60),
+                ])],
+            ],
+            retryAfterSeconds: $seconds
+        );
     }
 
     /**

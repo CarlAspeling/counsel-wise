@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\SecurityEventLog;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -99,6 +100,19 @@ class EmailVerificationRequest extends FormRequest
         }
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
+
+        // Log failed email verification event due to rate limiting
+        SecurityEventLog::createEvent(
+            \App\Enums\SecurityEventType::EMAIL_VERIFICATION_FAILED,
+            user: $this->user(),
+            metadata: [
+                'rate_limited' => true,
+                'lockout_seconds' => $seconds,
+                'lockout_minutes' => ceil($seconds / 60),
+                'throttle_key' => $this->throttleKey(),
+                'max_attempts' => $maxAttempts,
+            ]
+        );
 
         throw ValidationException::withMessages([
             'email' => trans('auth.email_verification_throttle', [
