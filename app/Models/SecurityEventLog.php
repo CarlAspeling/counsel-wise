@@ -256,6 +256,30 @@ class SecurityEventLog extends Model
     }
 
     /**
+     * Scope to get events from today.
+     */
+    public function scopeToday($query)
+    {
+        return $query->whereDate('occurred_at', today());
+    }
+
+    /**
+     * Scope to get events by IP address.
+     */
+    public function scopeByIpAddress($query, string $ip)
+    {
+        return $query->where('ip_address', $ip);
+    }
+
+    /**
+     * Scope to get events by user ID.
+     */
+    public function scopeByUser($query, int $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    /**
      * Scope to get events that should trigger alerts.
      */
     public function scopeAlertsOnly($query)
