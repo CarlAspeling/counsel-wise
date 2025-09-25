@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\EmailVerificationRequest;
 use App\Http\StatusCodes;
+use App\Models\SecurityEventLog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
@@ -29,6 +30,16 @@ class EmailVerificationNotificationController extends Controller
             }
 
             $request->user()->sendEmailVerificationNotification();
+
+            // Log successful email verification sent event
+            SecurityEventLog::createEvent(
+                \App\Enums\SecurityEventType::EMAIL_VERIFICATION_SENT,
+                user: $request->user(),
+                metadata: [
+                    'user_agent' => $request->userAgent(),
+                    'already_verified' => false,
+                ]
+            );
 
             if ($request->expectsJson()) {
                 return response()->json([
