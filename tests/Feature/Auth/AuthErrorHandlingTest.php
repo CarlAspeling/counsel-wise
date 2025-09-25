@@ -61,7 +61,7 @@ describe('Login Error Handling', function () {
             'password' => 'wrongpassword',
         ]);
 
-        $response->assertStatus(422)
+        $response->assertStatus(429)
             ->assertJsonValidationErrors(['email']);
     });
 
@@ -307,7 +307,7 @@ describe('Error Message Accuracy', function () {
             'password' => 'wrongpassword',
         ]);
 
-        $response->assertStatus(422);
+        $response->assertStatus(429);
         $errors = $response->json('errors');
         expect($errors['email'][0])->toContain('Too many');
     });
