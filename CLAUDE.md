@@ -45,6 +45,16 @@ This application is a Laravel application and its main Laravel ecosystems packag
 ## Documentation Files
 - You must only create documentation files if explicitly requested by the user.
 
+## CLAUDE.md Maintenance
+- This CLAUDE.md file should be actively maintained with session learnings and user preferences.
+- When the user identifies issues, preferences, or workflow improvements during a session, proactively update this file to capture those learnings for future sessions.
+- Examples of items to capture:
+  - Environment-specific command flags (like `--without-tty` for test commands)
+  - User workflow preferences
+  - Project-specific conventions discovered during development
+  - Common issues and their solutions
+- Always ask the user if they want persistent changes documented in CLAUDE.md when you discover important workflow improvements or fixes.
+
 
 === boost rules ===
 
@@ -260,9 +270,10 @@ it('is true', function () {
 
 ### Running Tests
 - Run the minimal number of tests using an appropriate filter before finalizing code edits.
-- To run all tests: `php artisan test`.
-- To run all tests in a file: `php artisan test tests/Feature/ExampleTest.php`.
-- To filter on a particular test name: `php artisan test --filter=testName` (recommended after making a change to a related file).
+- To run all tests: `php.bat artisan test --without-tty --no-ansi`.
+- To run all tests in a file: `php.bat artisan test --without-tty --no-ansi tests/Feature/ExampleTest.php`.
+- To filter on a particular test name: `php.bat artisan test --without-tty --no-ansi --filter=testName` (recommended after making a change to a related file).
+- **ALWAYS use both `--without-tty` and `--no-ansi` flags** when running `php.bat artisan test` commands to prevent terminal color bleeding and formatting issues.
 - When the tests relating to your changes are passing, ask the user if they would like to run the entire test suite to ensure everything is still passing.
 
 ### Pest Assertions
