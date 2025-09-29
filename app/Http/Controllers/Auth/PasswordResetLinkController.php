@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\PasswordResetRequest;
 use App\Http\StatusCodes;
+use App\Models\SecurityEventLog;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Password;
@@ -38,6 +40,19 @@ class PasswordResetLinkController extends Controller
             $status = Password::sendResetLink($validated);
 
             if ($status == Password::RESET_LINK_SENT) {
+                // Log successful password reset request
+                $user = User::where('email', $validated['email'])->first();
+                SecurityEventLog::createEvent(
+                    \App\Enums\SecurityEventType::PASSWORD_RESET_REQUESTED,
+                    user: $user,
+                    email: $validated['email'],
+                    userAgent: $request->userAgent(),
+                    metadata: [
+                        'route' => $request->route()?->getName(),
+                        'method' => $request->method(),
+                    ]
+                );
+
                 if ($request->expectsJson()) {
                     return response()->json([
                         'message' => __($status),
@@ -50,9 +65,22 @@ class PasswordResetLinkController extends Controller
             // Handle failure cases
             $statusCode = match ($status) {
                 Password::RESET_THROTTLED => StatusCodes::RATE_LIMITED,
-                Password::INVALID_USER => StatusCodes::NOT_FOUND,
+                Password::INVALID_USER => StatusCodes::VALIDATION_FAILED,
                 default => StatusCodes::BAD_REQUEST,
             };
+
+            // Log failed password reset attempt
+            SecurityEventLog::createEvent(
+                \App\Enums\SecurityEventType::PASSWORD_RESET_FAILED,
+                user: null, // No user for invalid email
+                email: $validated['email'],
+                userAgent: $request->userAgent(),
+                metadata: [
+                    'failure_reason' => $status,
+                    'route' => $request->route()?->getName(),
+                    'method' => $request->method(),
+                ]
+            );
 
             if ($request->expectsJson()) {
                 return response()->json([
