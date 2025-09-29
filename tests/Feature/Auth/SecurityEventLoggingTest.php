@@ -82,9 +82,10 @@ describe('Registration Security Event Logging', function () {
             'name' => 'Test',
             'surname' => 'User',
             'email' => 'test@example.com',
-            'account_type' => 'general',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'hpcsa_number' => 'HP12345',
+            'account_type' => 'counsellor_free',
+            'password' => 'UniqueTestP@ss2024!',
+            'password_confirmation' => 'UniqueTestP@ss2024!',
         ]);
 
         $response->assertRedirect();
@@ -97,7 +98,12 @@ describe('Registration Security Event Logging', function () {
 
     test('failed registration creates security event log', function () {
         $response = $this->post('/register', [
+            'name' => '',
+            'surname' => '',
             'email' => 'invalid-email',
+            'account_type' => 'invalid_type',
+            'password' => '123',
+            'password_confirmation' => '456',
         ]);
 
         $response->assertRedirect();
@@ -308,6 +314,9 @@ describe('Event Type Coverage', function () {
             'email' => $user->email,
             'password' => 'password',
         ]);
+
+        // Logout to clear authentication state
+        $this->post('/logout');
 
         // Failed login (WARNING level)
         $this->post('/login', [

@@ -4,7 +4,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
 
 beforeEach(function () {
-    $this->actingAs(User::factory()->create());
+    $this->actingAs(User::factory()->superAdmin()->create());
 });
 
 it('returns active throttles when rate limits exist', function () {
