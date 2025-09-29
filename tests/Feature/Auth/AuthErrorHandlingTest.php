@@ -223,7 +223,7 @@ describe('Email Verification Error Handling', function () {
     test('verification with invalid signature returns 403', function () {
         $user = User::factory()->unverified()->create();
 
-        $response = $this->get("/verify-email/{$user->id}/invalid-hash");
+        $response = $this->actingAs($user)->get("/verify-email/{$user->id}/invalid-hash");
 
         $response->assertStatus(403);
     });
@@ -246,9 +246,10 @@ describe('HTTP Status Code Validation', function () {
             'name' => 'Test',
             'surname' => 'User',
             'email' => 'test@example.com',
-            'account_type' => 'general',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'hpcsa_number' => 'HP12345',
+            'account_type' => 'counsellor_free',
+            'password' => 'UniqueTestP@ss2024!',
+            'password_confirmation' => 'UniqueTestP@ss2024!',
         ]);
 
         $response->assertStatus(201);
@@ -275,8 +276,8 @@ describe('Error Message Accuracy', function () {
             ->assertJsonValidationErrors(['email', 'password']);
 
         $errors = $response->json('errors');
-        expect($errors['email'][0])->toContain('email');
-        expect($errors['password'][0])->toContain('password');
+        expect($errors['email'][0])->toContain('Email');
+        expect($errors['password'][0])->toContain('Password');
     });
 
     test('registration validation errors use translated attribute names', function () {
