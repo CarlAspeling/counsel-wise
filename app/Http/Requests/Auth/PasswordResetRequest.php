@@ -107,7 +107,8 @@ class PasswordResetRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return 'password-reset:'.$this->ip();
+        $email = $this->input('email', 'unknown');
+        return "password-reset:{$email}|".$this->ip();
     }
 
     /**

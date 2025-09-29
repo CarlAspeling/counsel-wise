@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\RateLimiter;
 
 beforeEach(function () {
     // Clear all rate limiters before each test
-    RateLimiter::clear('login:test@example.com|127.0.0.1');
+    RateLimiter::clear('test@example.com|127.0.0.1'); // Login throttle key
     RateLimiter::clear('registration:127.0.0.1');
     RateLimiter::clear('password-reset:test@example.com|127.0.0.1');
     RateLimiter::clear('email-verification:127.0.0.1');
@@ -22,7 +22,7 @@ describe('Login Rate Limiting', function () {
                 'email' => $email,
                 'password' => 'wrongpassword',
             ]);
-            $response->assertStatus(422);
+            $response->assertStatus(401); // AUTH_FAILED for invalid credentials
         }
 
         // Next attempt should trigger rate limiting
@@ -31,8 +31,7 @@ describe('Login Rate Limiting', function () {
             'password' => 'wrongpassword',
         ]);
 
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['email']);
+        $response->assertStatus(429); // RATE_LIMITED for JSON requests
 
         $errors = $response->json('errors');
         expect($errors['email'][0])->toContain('Too many');
@@ -65,7 +64,7 @@ describe('Login Rate Limiting', function () {
             'password' => 'wrongpassword',
         ]);
 
-        $response->assertStatus(422)
+        $response->assertStatus(401) // AUTH_FAILED for invalid credentials
             ->assertJsonValidationErrors(['email'])
             ->assertJsonMissing(['Too many']);
     });
@@ -89,12 +88,12 @@ describe('Login Rate Limiting', function () {
             'password' => 'wrongpassword',
         ]);
 
-        $response->assertStatus(422);
+        $response->assertStatus(429); // RATE_LIMITED for JSON requests
         $errors = $response->json('errors');
         expect($errors['email'][0])->toContain('Too many');
 
         // Check that the available time is within expected range
-        $availableIn = RateLimiter::availableIn("login:{$email}|127.0.0.1");
+        $availableIn = RateLimiter::availableIn("{$email}|127.0.0.1");
         expect($availableIn)->toBeLessThanOrEqual($decaySeconds);
         expect($availableIn)->toBeGreaterThan(0);
     });
@@ -117,9 +116,10 @@ describe('Registration Rate Limiting', function () {
             'name' => 'Test',
             'surname' => 'User',
             'email' => "test{$maxAttempts}@example.com",
-            'account_type' => 'general',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'hpcsa_number' => 'HP12345',
+            'account_type' => 'counsellor_free',
+            'password' => 'UniqueTestP@ss2024!',
+            'password_confirmation' => 'UniqueTestP@ss2024!',
         ]);
 
         $response->assertStatus(422)
@@ -134,9 +134,10 @@ describe('Registration Rate Limiting', function () {
             'name' => 'Test',
             'surname' => 'User',
             'email' => 'test@example.com',
-            'account_type' => 'general',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'hpcsa_number' => 'HP12345',
+            'account_type' => 'counsellor_free',
+            'password' => 'UniqueTestP@ss2024!',
+            'password_confirmation' => 'UniqueTestP@ss2024!',
         ]);
 
         $response->assertStatus(201);
@@ -161,9 +162,10 @@ describe('Registration Rate Limiting', function () {
             'name' => 'Test',
             'surname' => 'User',
             'email' => 'newuser@example.com',
-            'account_type' => 'general',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'hpcsa_number' => 'HP12345',
+            'account_type' => 'counsellor_free',
+            'password' => 'UniqueTestP@ss2024!',
+            'password_confirmation' => 'UniqueTestP@ss2024!',
         ]);
 
         $response->assertStatus(422);

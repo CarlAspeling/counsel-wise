@@ -115,7 +115,7 @@ class RegistrationRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'throttle' => trans('auth.registration_throttle', [
+            'email' => trans('auth.registration_throttle', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),
@@ -128,6 +128,26 @@ class RegistrationRequest extends FormRequest
     public function throttleKey(): string
     {
         return 'registration:'.$this->ip();
+    }
+
+    /**
+     * Handle a failed validation attempt.
+     */
+    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator): void
+    {
+        // Log failed registration security event
+        \App\Models\SecurityEventLog::logRegistrationFailed(
+            $this->input('email'),
+            [
+                'user_agent' => $this->userAgent(),
+                'validation_errors' => array_keys($validator->errors()->toArray()),
+                'attempted_account_type' => $this->input('account_type'),
+                'route' => $this->route()?->getName(),
+                'method' => $this->method(),
+            ]
+        );
+
+        parent::failedValidation($validator);
     }
 
     /**

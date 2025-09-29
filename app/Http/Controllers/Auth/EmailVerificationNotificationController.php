@@ -44,7 +44,7 @@ class EmailVerificationNotificationController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => trans('auth.verification_sent'),
-                ], StatusCodes::OK);
+                ], StatusCodes::ACCEPTED);
             }
 
             return back()->with('status', 'verification-link-sent');
