@@ -5,7 +5,6 @@ namespace App\Http\Requests\Auth;
 use App\Models\SecurityEventLog;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class EmailVerificationRequest extends FormRequest
@@ -127,10 +126,7 @@ class EmailVerificationRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        if ($this->user()) {
-            return 'email-verification:'.Str::transliterate($this->user()->email).'|'.$this->ip();
-        }
-
+        // IP-based rate limiting only to prevent abuse from same source
         return 'email-verification:'.$this->ip();
     }
 

@@ -108,18 +108,17 @@ class PasswordResetRequest extends FormRequest
     public function throttleKey(): string
     {
         $email = $this->input('email', 'unknown');
+
         return "password-reset:{$email}|".$this->ip();
     }
 
     /**
-     * Handle a successful validation attempt.
+     * Track rate limiting attempt after processing.
+     * This should be called from the controller after the request is fully processed.
      */
-    protected function passedValidation(): void
+    public function trackAttempt(): void
     {
-        // Only track rate limiting for password reset link requests
-        if ($this->routeIs('password.email')) {
-            $decaySeconds = config('auth.rate_limits.password_reset.decay_seconds', 300);
-            RateLimiter::hit($this->throttleKey(), $decaySeconds);
-        }
+        $decaySeconds = config('auth.rate_limits.password_reset.decay_seconds', 300);
+        RateLimiter::hit($this->throttleKey(), $decaySeconds);
     }
 }
