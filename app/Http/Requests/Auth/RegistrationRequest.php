@@ -135,6 +135,10 @@ class RegistrationRequest extends FormRequest
      */
     protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator): void
     {
+        // Increment rate limiter for failed validation attempts
+        $decaySeconds = config('auth.rate_limits.registration.decay_seconds', 900);
+        RateLimiter::hit($this->throttleKey(), $decaySeconds);
+
         // Log failed registration security event
         \App\Models\SecurityEventLog::logRegistrationFailed(
             $this->input('email'),

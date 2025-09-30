@@ -39,6 +39,11 @@ class PasswordResetLinkController extends Controller
             $validated = $request->validated();
             $status = Password::sendResetLink($validated);
 
+            // Only track rate limiting if this wasn't Laravel's built-in throttling
+            if ($status !== Password::RESET_THROTTLED) {
+                $request->trackAttempt();
+            }
+
             if ($status == Password::RESET_LINK_SENT) {
                 // Log successful password reset request
                 $user = User::where('email', $validated['email'])->first();
