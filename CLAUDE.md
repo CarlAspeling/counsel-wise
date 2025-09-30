@@ -471,4 +471,32 @@ $pages->assertNoJavascriptErrors()->assertNoConsoleLogs();
 
 - Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
 - Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test` with a specific filename or filter.
+
+## Session Learnings - Rate Limiting & Test Fixes (2025-09-29 & 2025-09-30)
+
+### Rate Limiting Implementation Patterns
+- **Throttle Key Formats**: Registration uses `registration:ip`, Login uses `email|ip`, Password Reset uses `password-reset:email|ip`, Email Verification uses `email-verification:ip` (IP-only)
+- **HTTP Status Code Standards**: Use 401 for authentication failures, 429 for rate limiting, 422 for validation errors, 202 for accepted async operations
+- **Test Data Requirements**: Always use valid `account_type` enum values (`counsellor_free`, `counsellor_paid`, etc.) and required fields like `hpcsa_number`
+- **Form Request Lifecycle Issues**: Avoid rate limiting in `passedValidation()` hooks as they may be called multiple times - prefer controller-based tracking after business logic completes
+- **Laravel Password Broker Throttling**: Laravel's `Password::sendResetLink()` has built-in throttling (1/minute) - custom rate limiting should not conflict with this
+
+### Test Isolation Patterns
+- **Authentication State**: Always logout between authentication attempts in tests to ensure proper isolation
+- **Rate Limiter Cleanup**: Clear rate limiters in `beforeEach()` using proper throttle key formats: `RateLimiter::clear('email|127.0.0.1')`
+- **Factory Usage**: Use specific factory states like `User::factory()->superAdmin()->create()` for authorization tests
+
+### Common Test Failures and Solutions
+- **Status Code Mismatches**: JSON requests return different status codes than web requests (429 vs 422 for rate limiting)
+- **Authorization Issues**: Admin tests require `superAdmin()` factory state, not regular users
+- **Validation vs Rate Limiting**: Rate limiting should track both validation failures AND successful requests depending on use case (e.g., registration tracks all attempts, password reset only tracks successes to avoid conflict with Laravel's throttling)
+- **Test Data Quality**: Missing required fields or invalid enum values cause cascade failures
+- **Double Rate Limiter Hits**: Form request `passedValidation()` hook can be called twice - move rate limiting to controller or use `trackAttempt()` method pattern
+- **Unrealistic Test Scenarios**: Some tests may expect behavior that conflicts with framework defaults (e.g., rapid successive password resets) - evaluate if test should be removed or rewritten
+
+### Project-Specific Conventions
+- **Security Event Logging**: All authentication actions must log security events with `SecurityEventLog::createEvent()`
+- **Password Complexity**: Use strong test passwords like `UniqueTestP@ss2024!` to meet uncompromised requirements
+- **Form Request Overrides**: Use `failedValidation()` method in FormRequest classes for custom error handling
+- **Rate Limiting Tracking Methods**: For complex scenarios, create `trackAttempt()` method on FormRequest that controller calls after validation, rather than using `passedValidation()` hook
 </laravel-boost-guidelines>
