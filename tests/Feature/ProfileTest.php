@@ -27,11 +27,12 @@ test('profile information can be updated', function () {
             'gender' => 'female',
             'language' => 'afrikaans',
             'region' => 'gauteng',
+            'password' => 'password', // Required for email change
         ]);
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
+        ->assertRedirect('/verify-email');
 
     $user->refresh();
 
