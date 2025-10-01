@@ -499,4 +499,27 @@ $pages->assertNoJavascriptErrors()->assertNoConsoleLogs();
 - **Password Complexity**: Use strong test passwords like `UniqueTestP@ss2024!` to meet uncompromised requirements
 - **Form Request Overrides**: Use `failedValidation()` method in FormRequest classes for custom error handling
 - **Rate Limiting Tracking Methods**: For complex scenarios, create `trackAttempt()` method on FormRequest that controller calls after validation, rather than using `passedValidation()` hook
+
+## Session Learnings - Profile Security Implementation (2025-10-01)
+
+### Documentation Approach
+- **TDD Implementation Guides**: When creating implementation documentation, structure it with complete code snippets ready to copy-paste, exact file paths, and step-by-step TDD workflow
+- **Documentation Updates**: After completing implementation, update documentation to shift from "implementation guide" to "what was accomplished" summary
+- **Implementation Summary Sections**: Include: what was implemented, files created/modified, test coverage stats, security improvements delivered, known limitations, and optional next steps
+
+### Profile Security Features Implemented
+- **Profile Update Security Logging**: All profile updates log `PROFILE_UPDATED`, `PROFILE_UPDATE_FAILED`, and `EMAIL_CHANGE_REQUESTED` events with metadata
+- **Profile Rate Limiting**: `ThrottleProfileUpdates` middleware limits profile updates to 10 per hour per user+IP combination
+- **Email Change Verification**: Email changes require password confirmation, reset `email_verified_at`, send verification email, and redirect to verification notice
+- **Frontend Email Verification UI**: Conditional password field only shows when email is being changed, verification banner shows when email unverified
+
+### Test Organization
+- **Test File Structure**: Group related tests by feature (e.g., `ProfileSecurityLoggingTest.php` contains both security logging AND rate limiting tests)
+- **Test Data Fixes**: When adding password requirements to email changes, update ALL existing tests that change email to include password field
+- **Test Coverage**: Profile features achieved 24 tests passing (9 email change + 8 security/rate limiting + 5 original + 2 role-based)
+
+### UAT Documentation Strategy
+- **Template-Based Approach**: Create comprehensive UAT strategy template with all sections as placeholders, then fill in section-by-section based on user priorities
+- **Section-by-Section Filling**: Ask user which section to focus on before filling in details rather than doing entire document at once
+- **Project-Specific Content**: Base UAT scope on current implementation state (what's built vs. what's planned), include actual user roles and features
 </laravel-boost-guidelines>
