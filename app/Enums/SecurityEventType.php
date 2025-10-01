@@ -27,6 +27,11 @@ enum SecurityEventType: string
     case PASSWORD_CHANGE_FAILED = 'password_change_failed';
     case PASSWORD_CHANGE_RATE_LIMITED = 'password_change_rate_limited';
 
+    case PROFILE_UPDATED = 'profile_updated';
+    case PROFILE_UPDATE_FAILED = 'profile_update_failed';
+    case PROFILE_UPDATE_RATE_LIMITED = 'profile_update_rate_limited';
+    case EMAIL_CHANGE_REQUESTED = 'email_change_requested';
+
     case ACCOUNT_LOCKED = 'account_locked';
     case ACCOUNT_UNLOCKED = 'account_unlocked';
     case ACCOUNT_SUSPENDED = 'account_suspended';
@@ -65,6 +70,11 @@ enum SecurityEventType: string
             self::PASSWORD_CHANGE_FAILED => 'Failed password change attempt',
             self::PASSWORD_CHANGE_RATE_LIMITED => 'Password change blocked due to rate limiting',
 
+            self::PROFILE_UPDATED => 'User profile updated successfully',
+            self::PROFILE_UPDATE_FAILED => 'Failed profile update attempt',
+            self::PROFILE_UPDATE_RATE_LIMITED => 'Profile update blocked due to rate limiting',
+            self::EMAIL_CHANGE_REQUESTED => 'User requested email address change',
+
             self::ACCOUNT_LOCKED => 'Account locked due to security concerns',
             self::ACCOUNT_UNLOCKED => 'Account unlocked',
             self::ACCOUNT_SUSPENDED => 'Account suspended',
@@ -88,22 +98,26 @@ enum SecurityEventType: string
             self::PASSWORD_RESET_SUCCESS,
             self::EMAIL_VERIFICATION_SUCCESS,
             self::PASSWORD_CHANGED,
+            self::PROFILE_UPDATED,
             self::ACCOUNT_UNLOCKED => 'info',
 
             self::PASSWORD_RESET_REQUESTED,
             self::EMAIL_VERIFICATION_REQUESTED,
-            self::EMAIL_VERIFICATION_SENT => 'notice',
+            self::EMAIL_VERIFICATION_SENT,
+            self::EMAIL_CHANGE_REQUESTED => 'notice',
 
             self::LOGIN_FAILED,
             self::REGISTRATION_FAILED,
             self::PASSWORD_RESET_FAILED,
             self::EMAIL_VERIFICATION_FAILED,
-            self::PASSWORD_CHANGE_FAILED => 'warning',
+            self::PASSWORD_CHANGE_FAILED,
+            self::PROFILE_UPDATE_FAILED => 'warning',
 
             self::LOGIN_RATE_LIMITED,
             self::PASSWORD_RESET_RATE_LIMITED,
             self::EMAIL_VERIFICATION_RATE_LIMITED,
             self::PASSWORD_CHANGE_RATE_LIMITED,
+            self::PROFILE_UPDATE_RATE_LIMITED,
             self::MULTIPLE_LOGIN_ATTEMPTS,
             self::UNUSUAL_LOCATION,
             self::RATE_LIMIT_EXCEEDED => 'alert',
