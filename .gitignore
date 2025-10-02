@@ -32,6 +32,8 @@ Homestead.json
 Homestead.yaml
 /.vagrant
 /auth.json
+/docker/
+sail
 
 # Testing
 .phpunit.result.cache
@@ -60,3 +62,12 @@ Homestead.yaml
 /.vscode
 /.zed
 .phpactor.json
+
+# Laravel Boost MCP Server
+/config/boost.php
+/config/tinker.php
+/routes/ai.php
+
+# Published vendor views
+/resources/views/errors/
+/resources/views/vendor/
