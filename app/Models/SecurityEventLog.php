@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\SecurityEventType;
 use App\Services\GeolocationService;
 use App\Services\SecurityAlertService;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +13,7 @@ use Illuminate\Support\Carbon;
 class SecurityEventLog extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'event_type',
         'severity',
@@ -236,7 +236,7 @@ class SecurityEventLog extends Model
     public function scopeForUser($query, User $user)
     {
         return $query->where('user_id', $user->id)
-                    ->orWhere('email', $user->email);
+            ->orWhere('email', $user->email);
     }
 
     /**

@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Cache;
 class SuspiciousActivityDetector
 {
     protected int $maxFailedAttempts = 5;
+
     protected int $timeWindowMinutes = 15;
+
     protected int $unusualActivityThreshold = 10;
 
     /**
@@ -179,6 +181,7 @@ class SuspiciousActivityDetector
     {
         $offHoursEvents = $events->filter(function ($event) {
             $hour = $event->occurred_at->hour;
+
             return $hour < 6 || $hour > 22; // Activity between 10 PM and 6 AM
         });
 
@@ -276,9 +279,9 @@ class SuspiciousActivityDetector
      */
     public function logSuspiciousActivity(?User $user, string $ipAddress, array $patterns): void
     {
-        $highSeverityPatterns = array_filter($patterns, fn($p) => $p['severity'] === 'high');
+        $highSeverityPatterns = array_filter($patterns, fn ($p) => $p['severity'] === 'high');
 
-        if (!empty($highSeverityPatterns)) {
+        if (! empty($highSeverityPatterns)) {
             SecurityEventLog::createEvent(
                 SecurityEventType::SUSPICIOUS_ACTIVITY,
                 $user,
@@ -302,7 +305,7 @@ class SuspiciousActivityDetector
 
         return Cache::remember($cacheKey, 300, function () use ($ipAddress) {
             $patterns = $this->analyzeIPActivity($ipAddress);
-            $highSeverityPatterns = array_filter($patterns, fn($p) => $p['severity'] === 'high');
+            $highSeverityPatterns = array_filter($patterns, fn ($p) => $p['severity'] === 'high');
 
             return count($highSeverityPatterns) >= 2;
         });

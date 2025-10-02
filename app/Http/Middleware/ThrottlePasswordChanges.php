@@ -23,7 +23,7 @@ class ThrottlePasswordChanges
     public function handle(Request $request, Closure $next): Response
     {
         // Only throttle PUT/PATCH requests (password updates)
-        if (!in_array($request->method(), ['PUT', 'PATCH'])) {
+        if (! in_array($request->method(), ['PUT', 'PATCH'])) {
             return $next($request);
         }
 
@@ -50,7 +50,7 @@ class ThrottlePasswordChanges
         $maxAttempts = 5;
         $decayMinutes = 15;
 
-        if (!RateLimiter::tooManyAttempts($this->throttleKey($request), $maxAttempts)) {
+        if (! RateLimiter::tooManyAttempts($this->throttleKey($request), $maxAttempts)) {
             return;
         }
 
@@ -64,8 +64,8 @@ class ThrottlePasswordChanges
 
         throw ValidationException::withMessages([
             'current_password' => [
-                'Too many password change attempts. Please try again in ' .
-                ceil($seconds / 60) . ' minutes.'
+                'Too many password change attempts. Please try again in '.
+                ceil($seconds / 60).' minutes.',
             ],
         ])->errorBag('updatePassword');
     }
@@ -75,7 +75,7 @@ class ThrottlePasswordChanges
      */
     protected function throttleKey(Request $request): string
     {
-        return 'password_change:' . $request->user()->id . '|' . $request->ip();
+        return 'password_change:'.$request->user()->id.'|'.$request->ip();
     }
 
     /**
@@ -99,7 +99,7 @@ class ThrottlePasswordChanges
      */
     public static function incrementAttempts(Request $request): void
     {
-        $throttleKey = 'password_change:' . $request->user()->id . '|' . $request->ip();
+        $throttleKey = 'password_change:'.$request->user()->id.'|'.$request->ip();
         RateLimiter::hit($throttleKey, 900); // 15 minutes decay
     }
 }

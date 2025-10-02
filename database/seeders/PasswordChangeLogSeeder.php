@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\PasswordChangeLog;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class PasswordChangeLogSeeder extends Seeder
@@ -24,6 +23,7 @@ class PasswordChangeLogSeeder extends Seeder
         // Only seed if we have users
         if (User::count() === 0) {
             $this->command->info('No users found. Skipping password change log seeding.');
+
             return;
         }
 

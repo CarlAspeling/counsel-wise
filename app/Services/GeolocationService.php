@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 class GeolocationService
 {
     protected string $baseUrl = 'http://ip-api.com/json/';
+
     protected int $cacheTime = 86400; // 24 hours
 
     /**
@@ -34,7 +35,7 @@ class GeolocationService
     protected function fetchLocationData(string $ipAddress): array
     {
         try {
-            $response = Http::timeout(5)->get($this->baseUrl . $ipAddress);
+            $response = Http::timeout(5)->get($this->baseUrl.$ipAddress);
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -98,7 +99,7 @@ class GeolocationService
      */
     public function isLocationSuspicious(string $ipAddress, ?string $lastCountry = null): bool
     {
-        if (!$lastCountry) {
+        if (! $lastCountry) {
             return false;
         }
 
@@ -107,7 +108,7 @@ class GeolocationService
         // Consider it suspicious if the country changed and it's not a local IP
         return $currentLocation['country'] &&
                $currentLocation['country'] !== $lastCountry &&
-               !$this->isLocalIp($ipAddress);
+               ! $this->isLocalIp($ipAddress);
     }
 
     /**

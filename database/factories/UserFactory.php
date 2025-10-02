@@ -33,7 +33,7 @@ class UserFactory extends Factory
         $createdAt = fake()->dateTimeBetween('-100 days', 'now');
         $createdAtCarbon = Carbon::parse($createdAt);
         $updatedAt = fake()->dateTimeBetween($createdAt, 'now');
-        
+
         return [
             'name' => fake()->firstName(),
             'surname' => fake()->lastName(),
