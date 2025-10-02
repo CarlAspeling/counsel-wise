@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\SecurityEventType;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\ThrottlePasswordChanges;
 use App\Models\PasswordChangeLog;
 use App\Models\SecurityEventLog;
-use App\Enums\SecurityEventType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -103,7 +103,7 @@ class PasswordController extends Controller
                 $request->user(),
                 metadata: [
                     'failure_reason' => $failureReason,
-                    'change_method' => 'profile_form'
+                    'change_method' => 'profile_form',
                 ]
             );
         }

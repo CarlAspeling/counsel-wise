@@ -14,8 +14,7 @@ class SecurityDashboardController extends Controller
 {
     public function __construct(
         protected SuspiciousActivityDetector $suspiciousActivityDetector
-    ) {
-    }
+    ) {}
 
     /**
      * Display the security dashboard overview.
@@ -64,7 +63,7 @@ class SecurityDashboardController extends Controller
 
         // Filter by IP address
         if ($request->filled('ip_address')) {
-            $query->where('ip_address', 'like', '%' . $request->ip_address . '%');
+            $query->where('ip_address', 'like', '%'.$request->ip_address.'%');
         }
 
         $events = $query->paginate(50)->withQueryString();
@@ -249,7 +248,9 @@ class SecurityDashboardController extends Controller
             ->get();
 
         return $suspiciousUsers->map(function ($record) {
-            if (!$record->user) return null;
+            if (! $record->user) {
+                return null;
+            }
 
             $patterns = $this->suspiciousActivityDetector->analyzeUserActivity($record->user);
             $securityScore = $this->suspiciousActivityDetector->getUserSecurityScore($record->user);
@@ -276,7 +277,7 @@ class SecurityDashboardController extends Controller
         // This would typically come from a cache or database of blocked IPs
         // For now, we'll get recently suspicious IPs that should be blocked
         return collect($this->getSuspiciousIPs())
-            ->filter(fn($ip) => $ip['should_block'])
+            ->filter(fn ($ip) => $ip['should_block'])
             ->values()
             ->toArray();
     }
@@ -288,7 +289,7 @@ class SecurityDashboardController extends Controller
     {
         return SecurityEventLog::distinct('event_type')
             ->pluck('event_type')
-            ->map(fn($type) => ['value' => $type, 'label' => ucwords(str_replace('_', ' ', $type))])
+            ->map(fn ($type) => ['value' => $type, 'label' => ucwords(str_replace('_', ' ', $type))])
             ->toArray();
     }
 
@@ -297,14 +298,22 @@ class SecurityDashboardController extends Controller
      */
     protected function calculateThreatLevel(array $patterns): string
     {
-        if (empty($patterns)) return 'low';
+        if (empty($patterns)) {
+            return 'low';
+        }
 
-        $highSeverityCount = count(array_filter($patterns, fn($p) => $p['severity'] === 'high'));
-        $mediumSeverityCount = count(array_filter($patterns, fn($p) => $p['severity'] === 'medium'));
+        $highSeverityCount = count(array_filter($patterns, fn ($p) => $p['severity'] === 'high'));
+        $mediumSeverityCount = count(array_filter($patterns, fn ($p) => $p['severity'] === 'medium'));
 
-        if ($highSeverityCount >= 2) return 'critical';
-        if ($highSeverityCount >= 1) return 'high';
-        if ($mediumSeverityCount >= 2) return 'medium';
+        if ($highSeverityCount >= 2) {
+            return 'critical';
+        }
+        if ($highSeverityCount >= 1) {
+            return 'high';
+        }
+        if ($mediumSeverityCount >= 2) {
+            return 'medium';
+        }
 
         return 'low';
     }

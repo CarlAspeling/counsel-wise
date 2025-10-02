@@ -6,6 +6,7 @@ use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\LogSecurityEvents;
 use App\Http\Middleware\ThrottlePasswordChanges;
+use App\Http\Middleware\ThrottleProfilePictureUploads;
 use App\Http\Middleware\ThrottleProfileUpdates;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -33,6 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'status' => CheckAccountStatus::class,
             'throttle.password' => ThrottlePasswordChanges::class,
             'throttle.profile' => ThrottleProfileUpdates::class,
+            'throttle.picture' => ThrottleProfilePictureUploads::class,
             'log.security' => LogSecurityEvents::class,
         ]);
     })

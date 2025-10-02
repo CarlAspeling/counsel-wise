@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\PasswordChangeLog;
 use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -338,7 +337,7 @@ test('password requirements are enforced and logged correctly', function () {
 
     foreach ($weakPasswords as $weakPassword) {
         // Clear rate limiter before each password test to isolate validation testing
-        RateLimiter::clear('password_change:' . $user->id . '|127.0.0.1');
+        RateLimiter::clear('password_change:'.$user->id.'|127.0.0.1');
 
         $response = $this
             ->actingAs($user)

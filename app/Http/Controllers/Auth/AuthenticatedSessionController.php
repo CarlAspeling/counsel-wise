@@ -76,7 +76,7 @@ class AuthenticatedSessionController extends Controller
                     'message' => trans('auth.throttle_exceeded'),
                     'errors' => $e->getErrors(),
                 ], StatusCodes::RATE_LIMITED)
-                ->header('Retry-After', $e->getRetryAfterSeconds());
+                    ->header('Retry-After', $e->getRetryAfterSeconds());
             }
 
             // For web requests, redirect with validation errors

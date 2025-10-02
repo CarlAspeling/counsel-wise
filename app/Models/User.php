@@ -13,11 +13,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements HasMedia, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, InteractsWithMedia, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -73,5 +76,67 @@ class User extends Authenticatable implements MustVerifyEmail
             'region' => SouthAfricanProvince::class,
             'notification_preferences' => 'array',
         ];
+    }
+
+    /**
+     * Register media collections
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('profilePicture')
+            ->singleFile() // Only one profile picture at a time
+            ->acceptsMimeTypes(['image/jpeg', 'image/jpg', 'image/png', 'image/webp'])
+            ->useDisk('media');
+    }
+
+    /**
+     * Register media conversions
+     */
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(100)
+            ->height(100)
+            ->sharpen(10)
+            ->nonQueued(); // Generate immediately for fast feedback
+
+        $this->addMediaConversion('medium')
+            ->width(300)
+            ->height(300)
+            ->sharpen(10);
+
+        $this->addMediaConversion('large')
+            ->width(600)
+            ->height(600)
+            ->sharpen(10);
+    }
+
+    /**
+     * Get profile picture URL (with Laravolt fallback)
+     */
+    public function getProfilePictureUrlAttribute(): string
+    {
+        $media = $this->getFirstMedia('profilePicture');
+
+        if ($media) {
+            return $media->getUrl('medium');
+        }
+
+        // Fallback to Laravolt Avatar
+        return \Avatar::create($this->name.' '.$this->surname)->toBase64();
+    }
+
+    /**
+     * Get avatar for specific size
+     */
+    public function getAvatar(string $conversion = 'medium'): string
+    {
+        $media = $this->getFirstMedia('profilePicture');
+
+        if ($media) {
+            return $media->getUrl($conversion);
+        }
+
+        return \Avatar::create($this->name.' '.$this->surname)->toBase64();
     }
 }

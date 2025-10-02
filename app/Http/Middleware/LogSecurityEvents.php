@@ -93,6 +93,7 @@ class LogSecurityEvents
         // Check if this is a rate limiting error
         if ($this->isRateLimitError($e)) {
             $this->logRateLimitEvents($request, $routeName, $metadata);
+
             return;
         }
 
@@ -151,7 +152,7 @@ class LogSecurityEvents
             'Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException',
         ];
 
-        if (!in_array(get_class($e), $securityExceptions)) {
+        if (! in_array(get_class($e), $securityExceptions)) {
             return;
         }
 
@@ -175,6 +176,7 @@ class LogSecurityEvents
     protected function isRateLimitError(ValidationException $e): bool
     {
         $message = $e->getMessage();
+
         return str_contains($message, 'Too many') ||
                str_contains($message, 'throttle') ||
                str_contains($message, 'rate limit');

@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Enums\SecurityEventType;
 use App\Models\SecurityEventLog;
-use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -32,7 +31,7 @@ class SecurityAlertService
      */
     public function processSecurityEvent(SecurityEventLog $event): void
     {
-        if (!$this->shouldAlert($event)) {
+        if (! $this->shouldAlert($event)) {
             return;
         }
 
@@ -83,7 +82,7 @@ class SecurityAlertService
      */
     protected function sendCriticalAlert(SecurityEventLog $event): void
     {
-        $subject = "🚨 CRITICAL Security Alert - " . $event->event_type->getDescription();
+        $subject = '🚨 CRITICAL Security Alert - '.$event->event_type->getDescription();
         $message = $this->buildAlertMessage($event, 'CRITICAL');
 
         $this->sendEmailAlert($subject, $message, $event);
@@ -95,7 +94,7 @@ class SecurityAlertService
      */
     protected function sendHighPriorityAlert(SecurityEventLog $event): void
     {
-        $subject = "⚠️ High Priority Security Alert - " . $event->event_type->getDescription();
+        $subject = '⚠️ High Priority Security Alert - '.$event->event_type->getDescription();
         $message = $this->buildAlertMessage($event, 'HIGH');
 
         $this->sendEmailAlert($subject, $message, $event);
@@ -112,7 +111,7 @@ class SecurityAlertService
 
         $userInfo = $event->user
             ? "User: {$event->user->name} ({$event->user->email})"
-            : ($event->email ? "Email: {$event->email}" : "Unknown user");
+            : ($event->email ? "Email: {$event->email}" : 'Unknown user');
 
         return "
 **{$priority} SECURITY ALERT**
@@ -127,9 +126,9 @@ Location: {$location}
 
 Description: {$event->description}
 
-" . ($event->metadata ? "Additional Details: " . json_encode($event->metadata, JSON_PRETTY_PRINT) : '') . "
+".($event->metadata ? 'Additional Details: '.json_encode($event->metadata, JSON_PRETTY_PRINT) : '').'
 
-View full details: " . route('admin.security.events', ['id' => $event->id]);
+View full details: '.route('admin.security.events', ['id' => $event->id]);
     }
 
     /**
@@ -145,8 +144,8 @@ View full details: " . route('admin.security.events', ['id' => $event->id]);
             foreach ($this->adminEmails as $email) {
                 Mail::raw($message, function ($mail) use ($email, $subject) {
                     $mail->to($email)
-                         ->subject($subject)
-                         ->priority(1); // High priority
+                        ->subject($subject)
+                        ->priority(1); // High priority
                 });
             }
         } catch (\Exception $e) {
@@ -283,7 +282,7 @@ View full details: " . route('admin.security.events', ['id' => $event->id]);
     {
         $summary = $this->generateDailySummary();
 
-        $subject = "Daily Security Summary - " . $summary['period'];
+        $subject = 'Daily Security Summary - '.$summary['period'];
         $message = $this->buildSummaryMessage($summary);
 
         $this->sendEmailAlert($subject, $message, null);
@@ -295,7 +294,7 @@ View full details: " . route('admin.security.events', ['id' => $event->id]);
     protected function buildSummaryMessage(array $summary): string
     {
         $topEvents = collect($summary['top_event_types'])
-            ->map(fn($event) => "- {$event['event_type']}: {$event['count']}")
+            ->map(fn ($event) => "- {$event['event_type']}: {$event['count']}")
             ->join("\n");
 
         return "
@@ -312,6 +311,6 @@ Period: {$summary['period']}
 **Top Event Types:**
 {$topEvents}
 
-View detailed reports: " . route('admin.security.dashboard');
+View detailed reports: ".route('admin.security.dashboard');
     }
 }
