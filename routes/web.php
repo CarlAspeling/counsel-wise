@@ -27,6 +27,11 @@ Route::middleware(['auth', 'status', 'throttle.profile'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware(['auth', 'status', 'throttle.picture'])->group(function () {
+    Route::post('/profile/picture', [ProfileController::class, 'updateProfilePicture'])->name('profile.picture.update');
+    Route::delete('/profile/picture', [ProfileController::class, 'deleteProfilePicture'])->name('profile.picture.delete');
+});
+
 // Admin-only routes
 Route::middleware(['auth', 'verified', 'status', 'role:super_admin'])->prefix('admin')->name('admin.')->group(function () {
     // Placeholder for future admin routes

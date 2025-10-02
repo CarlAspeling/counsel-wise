@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SecurityEventType;
+use App\Http\Requests\ProfilePictureUpdateRequest;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\SecurityEventLog;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -117,6 +118,66 @@ class ProfileController extends Controller
 
             throw $e;
         }
+    }
+
+    /**
+     * Update the user's profile picture.
+     */
+    public function updateProfilePicture(ProfilePictureUpdateRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        try {
+            // Delete old profile picture
+            $user->clearMediaCollection('profilePicture');
+
+            // Upload new profile picture
+            $user->addMediaFromRequest('profile_picture')
+                ->toMediaCollection('profilePicture');
+
+            // Log successful upload
+            SecurityEventLog::createEvent(
+                SecurityEventType::PROFILE_PICTURE_UPDATED,
+                user: $user,
+                metadata: [
+                    'file_name' => $request->file('profile_picture')->getClientOriginalName(),
+                    'file_size' => $request->file('profile_picture')->getSize(),
+                    'mime_type' => $request->file('profile_picture')->getMimeType(),
+                ]
+            );
+
+            return Redirect::route('profile.edit')->with('status', 'profile-picture-updated');
+
+        } catch (\Exception $e) {
+            // Log unexpected failures
+            SecurityEventLog::createEvent(
+                SecurityEventType::PROFILE_PICTURE_UPLOAD_FAILED,
+                user: $user,
+                metadata: [
+                    'failure_reason' => 'system_error',
+                    'error' => $e->getMessage(),
+                ]
+            );
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Delete the user's profile picture.
+     */
+    public function deleteProfilePicture(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        $user->clearMediaCollection('profilePicture');
+
+        SecurityEventLog::createEvent(
+            SecurityEventType::PROFILE_PICTURE_DELETED,
+            user: $user
+        );
+
+        return Redirect::route('profile.edit')->with('status', 'profile-picture-deleted');
     }
 
     /**
