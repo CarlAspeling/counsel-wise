@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 
 class ProfileUpdateRequest extends FormRequest
 {
@@ -37,6 +38,13 @@ class ProfileUpdateRequest extends FormRequest
             'gender' => ['nullable', Rule::enum(Gender::class)],
             'language' => ['nullable', Rule::enum(Language::class)],
             'region' => ['nullable', Rule::enum(SouthAfricanProvince::class)],
+            'profile_picture' => [
+                'nullable',
+                File::image()
+                    ->min(50) // 50KB minimum
+                    ->max(5 * 1024), // 5MB maximum
+                'mimes:jpeg,jpg,png,webp',
+            ],
         ];
 
         // Require password confirmation if email is being changed
@@ -55,6 +63,10 @@ class ProfileUpdateRequest extends FormRequest
         return [
             'password.required' => 'Please confirm your password to change your email address.',
             'password.current_password' => 'The provided password is incorrect.',
+            'profile_picture.image' => 'The file must be an image.',
+            'profile_picture.mimes' => 'Only JPEG, PNG, and WebP images are allowed.',
+            'profile_picture.min' => 'The image must be at least 50KB.',
+            'profile_picture.max' => 'The image must not exceed 5MB.',
         ];
     }
 

@@ -21,14 +21,13 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified', 'status'])
     ->name('dashboard');
 
-Route::middleware(['auth', 'status', 'throttle.profile'])->group(function () {
+Route::middleware(['auth', 'status'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('throttle.profile');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
-Route::middleware(['auth', 'status', 'throttle.picture'])->group(function () {
-    Route::post('/profile/picture', [ProfileController::class, 'updateProfilePicture'])->name('profile.picture.update');
+    // Profile picture routes
+    Route::post('/profile/picture', [ProfileController::class, 'updateProfilePicture'])->name('profile.picture.update')->middleware('throttle.picture');
     Route::delete('/profile/picture', [ProfileController::class, 'deleteProfilePicture'])->name('profile.picture.delete');
 });
 
