@@ -103,12 +103,14 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         $this->addMediaConversion('medium')
             ->width(300)
             ->height(300)
-            ->sharpen(10);
+            ->sharpen(10)
+            ->queued(); // Queue for async processing
 
         $this->addMediaConversion('large')
             ->width(600)
             ->height(600)
-            ->sharpen(10);
+            ->sharpen(10)
+            ->queued(); // Queue for async processing
     }
 
     /**

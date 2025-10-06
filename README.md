@@ -102,6 +102,49 @@ composer run dev
 - `npm run lint` - Lint JavaScript/Vue files
 - `npm run format` - Format frontend code
 
+## Profile Picture Setup
+
+This application uses Spatie Media Library for profile picture management.
+
+### First-Time Setup
+
+1. Create storage symlink:
+   ```bash
+   php artisan storage:link
+   ```
+
+2. Ensure storage directories are writable:
+   ```bash
+   chmod -R 775 storage/app/public/media
+   ```
+
+### Upload Configuration
+
+Profile picture uploads are restricted to:
+- **File types:** JPEG, PNG, WebP
+- **Maximum size:** 5MB
+- **Minimum dimensions:** 200x200 pixels
+- **Maximum dimensions:** 4000x4000 pixels
+- **Rate limit:** 10 uploads per hour per user
+
+All uploads are validated and logged for security purposes.
+
+### Image Processing
+
+Uploaded images are automatically converted to three sizes:
+- **Thumbnail:** 100x100px (generated immediately)
+- **Medium:** 300x300px (queued for async processing)
+- **Large:** 600x600px (queued for async processing)
+
+**Note:** Ensure your queue worker is running to process medium and large conversions:
+```bash
+php artisan queue:work
+```
+
+### Packages Used
+- **Spatie Media Library** - File upload and management
+- **Laravolt Avatar** - Default profile pictures with user initials
+
 ## Testing
 
 Run the test suite:
