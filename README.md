@@ -141,6 +141,29 @@ Uploaded images are automatically converted to three sizes:
 php artisan queue:work
 ```
 
+### Default Avatars
+
+Users without uploaded profile pictures automatically get generated avatars with their initials.
+
+**Features:**
+- **Automatic generation:** PNG avatars created from user's first and last name
+- **Unique colors:** Consistent background colors assigned per user
+- **Caching:** Generated avatars cached for 1 hour for performance
+- **Shape:** Circle shape for modern UI consistency
+
+**Configuration:**
+
+Edit `config/avatar.php` to customize:
+- Colors (15 default colorful backgrounds available)
+- Font size and style
+- Image dimensions
+- Cache duration
+
+**Environment Variables:**
+- `IMAGE_DRIVER` - Image processing driver (default: `gd`)
+- `AVATAR_CACHE_ENABLED` - Enable/disable caching (default: `true`)
+- `AVATAR_CACHE_DURATION` - Cache duration in seconds (default: `3600`)
+
 ### Packages Used
 - **Spatie Media Library** - File upload and management
 - **Laravolt Avatar** - Default profile pictures with user initials
