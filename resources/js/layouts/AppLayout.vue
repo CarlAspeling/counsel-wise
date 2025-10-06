@@ -1,19 +1,23 @@
 <template>
-    <div class="min-h-screen bg-gray-100 flex flex-col">
-        <nav class="bg-white shadow">
+    <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
+        <nav class="bg-white dark:bg-gray-800 shadow">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <div class="flex items-center">
-                        <Link href="/" class="text-xl font-semibold text-gray-900">
+                        <Link href="/" class="text-xl font-semibold text-gray-900 dark:text-gray-100">
                             CounselWise
                         </Link>
                     </div>
 
-                    <div class="flex items-center space-x-4" v-if="$page.props.auth.user">
-                        <span class="text-gray-700">{{ $page.props.auth.user.name }}</span>
+                    <div class="flex items-center gap-4" v-if="$page.props.auth.user">
+                        <UserAvatar
+                            :user="$page.props.auth.user"
+                            size="medium"
+                            :ring="2"
+                        />
                         <Link
                             :href="route('profile.edit')"
-                            class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md"
+                            class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 px-3 py-2 rounded-md"
                         >
                             Profile
                         </Link>
@@ -27,10 +31,10 @@
                         </Link>
                     </div>
 
-                    <div class="flex items-center space-x-4" v-else>
+                    <div class="flex items-center gap-4" v-else>
                         <Link
                             :href="route('login')"
-                            class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md"
+                            class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 px-3 py-2 rounded-md"
                         >
                             Login
                         </Link>
@@ -53,4 +57,5 @@
 
 <script setup>
 import { Link } from '@inertiajs/vue3'
+import UserAvatar from '@/Components/UserAvatar.vue'
 </script>

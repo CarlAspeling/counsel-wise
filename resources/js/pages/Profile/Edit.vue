@@ -30,19 +30,19 @@
                     </p>
                 </div>
 
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <h2 class="text-lg font-medium text-gray-900 mb-6">Profile Information</h2>
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-6">Profile Information</h2>
 
                         <form @submit.prevent="updateProfile" class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                                    <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
                                     <input
                                         id="name"
                                         v-model="profileForm.name"
                                         type="text"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm"
                                         :class="{ 'border-red-500': profileForm.errors.name }"
                                     />
                                     <div v-if="profileForm.errors.name" class="text-red-500 text-xs mt-1">
@@ -51,12 +51,12 @@
                                 </div>
 
                                 <div>
-                                    <label for="surname" class="block text-sm font-medium text-gray-700">Surname</label>
+                                    <label for="surname" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Surname</label>
                                     <input
                                         id="surname"
                                         v-model="profileForm.surname"
                                         type="text"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm"
                                         :class="{ 'border-red-500': profileForm.errors.surname }"
                                     />
                                     <div v-if="profileForm.errors.surname" class="text-red-500 text-xs mt-1">
@@ -65,12 +65,12 @@
                                 </div>
 
                                 <div>
-                                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
                                     <input
                                         id="email"
                                         v-model="profileForm.email"
                                         type="email"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm"
                                         :class="{ 'border-red-500': profileForm.errors.email }"
                                     />
                                     <div v-if="profileForm.errors.email" class="text-red-500 text-xs mt-1">
@@ -79,12 +79,12 @@
                                 </div>
 
                                 <div>
-                                    <label for="hpcsa_number" class="block text-sm font-medium text-gray-700">HPCSA Number</label>
+                                    <label for="hpcsa_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">HPCSA Number</label>
                                     <input
                                         id="hpcsa_number"
                                         v-model="profileForm.hpcsa_number"
                                         type="text"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm"
                                         :class="{ 'border-red-500': profileForm.errors.hpcsa_number }"
                                     />
                                     <div v-if="profileForm.errors.hpcsa_number" class="text-red-500 text-xs mt-1">
@@ -93,12 +93,12 @@
                                 </div>
 
                                 <div>
-                                    <label for="phone_number" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                                    <label for="phone_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
                                     <input
                                         id="phone_number"
                                         v-model="profileForm.phone_number"
                                         type="tel"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm"
                                         :class="{ 'border-red-500': profileForm.errors.phone_number }"
                                         placeholder="+27 XX XXX XXXX"
                                     />
@@ -108,11 +108,11 @@
                                 </div>
 
                                 <div>
-                                    <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
+                                    <label for="gender" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gender</label>
                                     <select
                                         id="gender"
                                         v-model="profileForm.gender"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm"
                                         :class="{ 'border-red-500': profileForm.errors.gender }"
                                     >
                                         <option value="">Select gender</option>
@@ -126,11 +126,11 @@
                                 </div>
 
                                 <div>
-                                    <label for="language" class="block text-sm font-medium text-gray-700">Language</label>
+                                    <label for="language" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Language</label>
                                     <select
                                         id="language"
                                         v-model="profileForm.language"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm"
                                         :class="{ 'border-red-500': profileForm.errors.language }"
                                     >
                                         <option value="">Select language</option>
@@ -150,15 +150,13 @@
                                         {{ profileForm.errors.language }}
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
                                 <div>
-                                    <label for="region" class="block text-sm font-medium text-gray-700">Region</label>
+                                    <label for="region" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Region</label>
                                     <select
                                         id="region"
                                         v-model="profileForm.region"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm"
                                         :class="{ 'border-red-500': profileForm.errors.region }"
                                     >
                                         <option value="">Select region</option>
@@ -174,6 +172,19 @@
                                     </select>
                                     <div v-if="profileForm.errors.region" class="text-red-500 text-xs mt-1">
                                         {{ profileForm.errors.region }}
+                                    </div>
+                                </div>
+
+                                <!-- Profile Picture Upload -->
+                                <div class="md:col-span-2">
+                                    <ProfilePictureUpload
+                                        v-model="profileForm.profile_picture"
+                                        :profile-picture-url="auth.user.profile_picture_url"
+                                        :user-name="`${auth.user.name} ${auth.user.surname}`"
+                                        :has-uploaded-picture="hasUploadedPicture"
+                                    />
+                                    <div v-if="profileForm.errors.profile_picture" class="text-red-500 text-xs mt-1">
+                                        {{ profileForm.errors.profile_picture }}
                                     </div>
                                 </div>
                             </div>
@@ -214,9 +225,9 @@
                 </div>
 
                 <!-- Change Password Section -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <h2 class="text-lg font-medium text-gray-900 mb-6">Update Password</h2>
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-6">Update Password</h2>
 
                         <form @submit.prevent="updatePassword" class="space-y-6">
                             <div>
@@ -242,15 +253,15 @@
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                                     :class="{ 'border-red-500': passwordForm.errors.password }"
                                 />
-                                
+
                                 <!-- Password Strength Indicator -->
-                                <PasswordStrengthIndicator 
+                                <PasswordStrengthIndicator
                                     v-if="passwordForm.password"
                                     :password="passwordForm.password"
                                     :show-requirements="true"
                                     :show-errors="false"
                                 />
-                                
+
                                 <div v-if="passwordForm.errors.password" class="text-red-500 text-xs mt-1">
                                     {{ passwordForm.errors.password }}
                                 </div>
@@ -264,7 +275,7 @@
                                     type="password"
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                                 />
-                                
+
                                 <!-- Password Match Validation -->
                                 <div v-if="passwordForm.password_confirmation && !passwordsMatch" class="mt-2 text-xs text-red-600">
                                     Passwords do not match
@@ -288,7 +299,7 @@
                                     Password updated successfully!
                                 </div>
                             </div>
-                            
+
                             <!-- Submit button help text -->
                             <div v-if="passwordForm.password && !isPasswordValid" class="text-xs text-gray-500 text-center">
                                 Please ensure your password meets all requirements above
@@ -309,6 +320,7 @@ import { useForm } from '@inertiajs/vue3'
 import { computed } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import PasswordStrengthIndicator from '@/Components/PasswordStrengthIndicator.vue'
+import ProfilePictureUpload from '@/Components/ProfilePictureUpload.vue'
 import { validatePassword } from '@/utils/passwordValidation.js'
 
 const props = defineProps({
@@ -317,7 +329,13 @@ const props = defineProps({
     status: String,
 })
 
+// Determine if user has uploaded a picture (vs. fallback avatar)
+const hasUploadedPicture = computed(() => {
+    return props.auth.user.profile_picture_url && !props.auth.user.profile_picture_url.startsWith('data:image/')
+})
+
 const profileForm = useForm({
+    _method: 'PATCH',
     name: props.auth.user.name,
     surname: props.auth.user.surname,
     email: props.auth.user.email,
@@ -327,6 +345,7 @@ const profileForm = useForm({
     language: props.auth.user.language,
     region: props.auth.user.region,
     password: '', // Add password field for email change confirmation
+    profile_picture: null, // Add profile picture field
 })
 
 const passwordForm = useForm({
@@ -335,7 +354,7 @@ const passwordForm = useForm({
     password_confirmation: '',
 })
 
-// Password validation state  
+// Password validation state
 const passwordValidation = computed(() => validatePassword(passwordForm.password));
 const isPasswordValid = computed(() => passwordValidation.value.isValid);
 
@@ -351,7 +370,7 @@ const canUpdatePassword = computed(() => {
 });
 
 const updateProfile = () => {
-    profileForm.patch(route('profile.update'), {
+    profileForm.post(route('profile.update'), {
         preserveScroll: true,
     })
 }
@@ -361,11 +380,11 @@ const updatePassword = () => {
     if (!isPasswordValid.value) {
         return;
     }
-    
+
     if (!passwordsMatch.value) {
         return;
     }
-    
+
     passwordForm.put(route('password.update'), {
         preserveScroll: true,
         onSuccess: () => passwordForm.reset(),
