@@ -135,3 +135,35 @@ describe('Profile Picture Upload', function () {
         $response->assertStatus(429);
     });
 });
+
+describe('Image Conversions', function () {
+    test('generates thumbnail conversion after upload', function () {
+        $user = User::factory()->create();
+        $file = UploadedFile::fake()->image('avatar.jpg', 500, 500)->size(100);
+
+        $this->actingAs($user)->post('/profile/picture', ['profile_picture' => $file]);
+
+        $media = $user->fresh()->getFirstMedia('profilePicture');
+        expect($media->hasGeneratedConversion('thumb'))->toBeTrue();
+    });
+
+    test('generates medium conversion after upload', function () {
+        $user = User::factory()->create();
+        $file = UploadedFile::fake()->image('avatar.jpg', 500, 500)->size(100);
+
+        $this->actingAs($user)->post('/profile/picture', ['profile_picture' => $file]);
+
+        $media = $user->fresh()->getFirstMedia('profilePicture');
+        expect($media->hasGeneratedConversion('medium'))->toBeTrue();
+    });
+
+    test('generates large conversion after upload', function () {
+        $user = User::factory()->create();
+        $file = UploadedFile::fake()->image('avatar.jpg', 500, 500)->size(100);
+
+        $this->actingAs($user)->post('/profile/picture', ['profile_picture' => $file]);
+
+        $media = $user->fresh()->getFirstMedia('profilePicture');
+        expect($media->hasGeneratedConversion('large'))->toBeTrue();
+    });
+});

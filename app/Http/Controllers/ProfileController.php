@@ -25,7 +25,7 @@ class ProfileController extends Controller
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user()->load('media'),
             ],
             'routes' => [
                 'profile.update' => route('profile.update'),
@@ -46,13 +46,43 @@ class ProfileController extends Controller
 
             // Track what changed
             $emailChanged = $user->email !== $validated['email'];
+            $profilePictureUploaded = $request->hasFile('profile_picture');
             $changedFields = [];
 
             foreach ($validated as $field => $value) {
+                if ($field === 'profile_picture') {
+                    continue; // Skip profile_picture in regular fill
+                }
                 if (isset($user->$field) && $value != $user->$field) {
                     $changedFields[] = $field;
                 }
             }
+
+            // Handle profile picture upload if present
+            if ($profilePictureUploaded) {
+                // Delete old profile picture
+                $user->clearMediaCollection('profilePicture');
+
+                // Upload new profile picture
+                $media = $user->addMediaFromRequest('profile_picture')
+                    ->toMediaCollection('profilePicture');
+
+                $changedFields[] = 'profile_picture';
+
+                // Log profile picture update (using saved media object)
+                SecurityEventLog::createEvent(
+                    SecurityEventType::PROFILE_PICTURE_UPDATED,
+                    user: $user,
+                    metadata: [
+                        'file_name' => $media->file_name,
+                        'file_size' => $media->size,
+                        'mime_type' => $media->mime_type,
+                    ]
+                );
+            }
+
+            // Remove profile_picture from validated data before filling
+            unset($validated['profile_picture']);
 
             // Handle email change separately
             if ($emailChanged) {
@@ -170,14 +200,27 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        $user->clearMediaCollection('profilePicture');
+        try {
+            // Clear media collection
+            $user->clearMediaCollection('profilePicture');
 
-        SecurityEventLog::createEvent(
-            SecurityEventType::PROFILE_PICTURE_DELETED,
-            user: $user
-        );
+            // Log deletion
+            SecurityEventLog::createEvent(
+                SecurityEventType::PROFILE_PICTURE_DELETED,
+                user: $user
+            );
 
-        return Redirect::route('profile.edit')->with('status', 'profile-picture-deleted');
+            return Redirect::back()->with('status', 'profile-picture-deleted');
+        } catch (\Exception $e) {
+            \Log::error('Profile picture deletion failed', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return Redirect::back()->withErrors([
+                'profile_picture' => 'Failed to delete profile picture: '.$e->getMessage(),
+            ]);
+        }
     }
 
     /**

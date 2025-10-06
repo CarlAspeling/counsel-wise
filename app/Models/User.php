@@ -55,6 +55,15 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var list<string>
+     */
+    protected $appends = [
+        'profile_picture_url',
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -103,12 +112,14 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         $this->addMediaConversion('medium')
             ->width(300)
             ->height(300)
-            ->sharpen(10);
+            ->sharpen(10)
+            ->queued(); // Queue for async processing
 
         $this->addMediaConversion('large')
             ->width(600)
             ->height(600)
-            ->sharpen(10);
+            ->sharpen(10)
+            ->queued(); // Queue for async processing
     }
 
     /**
@@ -119,11 +130,20 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         $media = $this->getFirstMedia('profilePicture');
 
         if ($media) {
-            return $media->getUrl('medium');
+            // Use thumb conversion (non-queued, always available immediately)
+            // or original if thumb doesn't exist yet
+            if ($media->hasGeneratedConversion('thumb')) {
+                return $media->getUrl('thumb');
+            }
+
+            return $media->getUrl();
         }
 
-        // Fallback to Laravolt Avatar
-        return \Avatar::create($this->name.' '.$this->surname)->toBase64();
+        // Fallback to Laravolt Avatar - check for name/surname
+        $name = $this->name ?? 'User';
+        $surname = $this->surname ?? '';
+
+        return \Avatar::create(trim($name.' '.$surname))->toBase64();
     }
 
     /**
@@ -137,6 +157,10 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
             return $media->getUrl($conversion);
         }
 
-        return \Avatar::create($this->name.' '.$this->surname)->toBase64();
+        // Fallback to Laravolt Avatar - check for name/surname
+        $name = $this->name ?? 'User';
+        $surname = $this->surname ?? '';
+
+        return \Avatar::create(trim($name.' '.$surname))->toBase64();
     }
 }
