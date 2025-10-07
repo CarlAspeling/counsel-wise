@@ -15,6 +15,7 @@
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
         "laravolt/avatar": "*",
+        "resend/resend-laravel": "^0.22.0",
         "spatie/laravel-medialibrary": "*",
         "tightenco/ziggy": "^2.5"
     },
