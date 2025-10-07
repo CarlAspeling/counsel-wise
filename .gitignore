@@ -71,3 +71,5 @@ sail
 # Published vendor views
 /resources/views/errors/
 /resources/views/vendor/
+/first())
+/nul

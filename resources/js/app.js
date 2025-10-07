@@ -25,10 +25,46 @@ createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
-        return createApp({ render: () => h(App, props) })
+        // Apply theme on initial load and when it changes
+        const applyTheme = (theme) => {
+            const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        };
+
+        // Apply theme on initial load
+        applyTheme(props.initialPage.props.theme);
+
+        // Listen for system theme changes if using 'system' preference
+        if (props.initialPage.props.theme === 'system') {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                applyTheme('system');
+            });
+        }
+
+        const app = createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(ZiggyVue, Ziggy)
-            .mount(el);
+            .use(ZiggyVue, Ziggy);
+
+        // Watch for theme changes from Inertia
+        app.mixin({
+            watch: {
+                '$page.props.theme': {
+                    handler(newTheme) {
+                        if (newTheme) {
+                            applyTheme(newTheme);
+                        }
+                    },
+                    immediate: false,
+                },
+            },
+        });
+
+        return app.mount(el);
     },
     progress: {
         color: '#4F46E5',

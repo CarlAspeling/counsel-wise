@@ -175,6 +175,26 @@
                                     </div>
                                 </div>
 
+                                <div>
+                                    <label for="theme_preference" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Theme Preference</label>
+                                    <select
+                                        id="theme_preference"
+                                        v-model="profileForm.theme_preference"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm"
+                                        :class="{ 'border-red-500': profileForm.errors.theme_preference }"
+                                    >
+                                        <option value="light">Light</option>
+                                        <option value="dark">Dark</option>
+                                        <option value="system">System</option>
+                                    </select>
+                                    <div v-if="profileForm.errors.theme_preference" class="text-red-500 text-xs mt-1">
+                                        {{ profileForm.errors.theme_preference }}
+                                    </div>
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        Choose how the interface appears. System follows your device's theme.
+                                    </p>
+                                </div>
+
                                 <!-- Profile Picture Upload -->
                                 <div class="md:col-span-2">
                                     <ProfilePictureUpload
@@ -344,6 +364,7 @@ const profileForm = useForm({
     gender: props.auth.user.gender,
     language: props.auth.user.language,
     region: props.auth.user.region,
+    theme_preference: props.auth.user.theme_preference || 'light',
     password: '', // Add password field for email change confirmation
     profile_picture: null, // Add profile picture field
 })

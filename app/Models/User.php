@@ -34,7 +34,6 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'password',
         'hpcsa_number',
         'account_type',
-        'profile_picture',
         'account_status',
         'theme_preference',
         'phone_number',
@@ -84,6 +83,18 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
             'language' => Language::class,
             'region' => SouthAfricanProvince::class,
             'notification_preferences' => 'array',
+        ];
+    }
+
+    /**
+     * Get the model's default attribute values.
+     *
+     * @return array<string, mixed>
+     */
+    protected function defaults(): array
+    {
+        return [
+            'theme_preference' => ThemePreference::Light,
         ];
     }
 

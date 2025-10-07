@@ -38,6 +38,11 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+        // Get theme preference: user's database setting, fallback to cookie, then 'light'
+        $themePreference = $request->user()?->theme_preference?->value
+            ?? $request->cookie('appearance')
+            ?? 'light';
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -46,6 +51,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user()?->load('media'),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'theme' => $themePreference,
         ];
     }
 }

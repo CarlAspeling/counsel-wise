@@ -126,7 +126,7 @@ const submit = () => {
     form.clearErrors()
 
     // Submit form
-    form.post(route('register.store'), {
+    form.post(route('register'), {
         onSuccess: () => {
             // Success is handled by redirect
         },
