@@ -38,6 +38,7 @@ class ProfileUpdateRequest extends FormRequest
             'gender' => ['nullable', Rule::enum(Gender::class)],
             'language' => ['nullable', Rule::enum(Language::class)],
             'region' => ['nullable', Rule::enum(SouthAfricanProvince::class)],
+            'theme_preference' => ['nullable', Rule::enum(\App\Enums\ThemePreference::class)],
             'profile_picture' => [
                 'nullable',
                 File::image()
